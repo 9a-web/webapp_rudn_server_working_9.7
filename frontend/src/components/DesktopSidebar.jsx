@@ -131,7 +131,14 @@ export const DesktopSidebar = ({
       
       {/* Последние достижения */}
       {userAchievements && userAchievements.length > 0 && (
-        <div className="bg-card rounded-3xl p-6 shadow-card">
+        <div 
+          className="rounded-3xl p-6 shadow-card border border-white/10"
+          style={{
+            backgroundColor: 'rgba(52, 52, 52, 0.7)',
+            backdropFilter: 'blur(40px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(40px) saturate(180%)'
+          }}
+        >
           <h3 className="text-lg font-semibold text-foreground mb-4">
             {t('achievements.recent', 'Последние достижения')}
           </h3>
