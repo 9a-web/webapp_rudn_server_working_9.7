@@ -55,6 +55,9 @@ const Home = () => {
   const [userStats, setUserStats] = useState(null);
   const [newAchievement, setNewAchievement] = useState(null); // Для показа уведомления
 
+  // Состояние для нижнего меню навигации
+  const [activeTab, setActiveTab] = useState('home');
+
   // Загрузка данных пользователя при монтировании
   useEffect(() => {
     if (isReady && user) {
