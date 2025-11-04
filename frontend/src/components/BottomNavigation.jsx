@@ -46,7 +46,7 @@ export const BottomNavigation = ({ activeTab = 'home', onTabChange, hapticFeedba
       className="fixed bottom-4 z-50"
       style={{ 
         width: '370px', 
-        height: '75px',
+        height: '50px',
         left: '50%'
       }}
     >
@@ -59,7 +59,7 @@ export const BottomNavigation = ({ activeTab = 'home', onTabChange, hapticFeedba
         />
         
         {/* Content container */}
-        <div className="relative h-full px-4 py-2">
+        <div className="relative h-full px-4 py-1">
           <div className="flex items-center justify-around gap-2 h-full">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
@@ -70,7 +70,7 @@ export const BottomNavigation = ({ activeTab = 'home', onTabChange, hapticFeedba
                     key={tab.id}
                     onClick={() => handleTabClick(tab.id)}
                     whileTap={{ scale: 0.92 }}
-                    className="relative flex-1 flex flex-col items-center justify-center py-2 px-3 transition-all duration-300 touch-manipulation"
+                    className="relative flex-1 flex items-center justify-center px-3 transition-all duration-300 touch-manipulation"
                     style={{
                       backgroundColor: isActive ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
                       borderRadius: '40px'
@@ -106,19 +106,6 @@ export const BottomNavigation = ({ activeTab = 'home', onTabChange, hapticFeedba
                         </div>
                       )}
                     </div>
-
-                    {/* Label */}
-                    <span
-                      className={`
-                        mt-1 text-[10px] font-medium transition-all duration-300 relative z-10
-                        ${isActive 
-                          ? 'text-white' 
-                          : 'text-[#999999]'
-                        }
-                      `}
-                    >
-                      {tab.label}
-                    </span>
 
                     {/* Active glow effect */}
                     {isActive && (
