@@ -98,9 +98,11 @@ export const ProfileModal = ({
               width: '260px',
               padding: '28px 20px',
               borderRadius: '28px',
-              background: 'linear-gradient(145deg, #2B2B3A 0%, #1E1E28 100%)',
+              backgroundColor: 'rgba(42, 42, 42, 0.75)',
+              backdropFilter: 'blur(40px) saturate(180%)',
+              WebkitBackdropFilter: 'blur(40px) saturate(180%)',
               boxShadow: '0 24px 48px rgba(0, 0, 0, 0.6), 0 0 1px rgba(255, 255, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
             }}
           >
             {/* Аватар пользователя */}
