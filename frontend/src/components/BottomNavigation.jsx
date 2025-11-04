@@ -54,7 +54,7 @@ export const BottomNavigation = ({ activeTab = 'home', onTabChange, hapticFeedba
       {/* Main navigation with rounded corners */}
       <div className="relative h-full">
         {/* Glow effects layer - rendered behind the background */}
-        <div className="absolute inset-0 pointer-events-none" style={{ overflow: 'visible' }}>
+        <div className="absolute inset-0 pointer-events-none" style={{ overflow: 'visible', zIndex: -1 }}>
           <div className="relative h-full px-4 py-1">
             <div className="flex items-center justify-around gap-2 h-full">
               {tabs.map((tab) => {
@@ -68,8 +68,8 @@ export const BottomNavigation = ({ activeTab = 'home', onTabChange, hapticFeedba
                       <motion.div
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className={`absolute inset-0 bg-gradient-to-br ${tab.gradient} opacity-10 blur-xl`}
-                        style={{ borderRadius: '40px' }}
+                        className={`absolute inset-0 bg-gradient-to-br ${tab.gradient} blur-2xl`}
+                        style={{ borderRadius: '40px', opacity: 0.3 }}
                       />
                     )}
                   </div>
