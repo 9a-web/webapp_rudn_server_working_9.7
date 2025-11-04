@@ -124,9 +124,11 @@ export const LiveScheduleCarousel = ({
                 >
                   {/* 3-я карточка */}
                   <motion.div 
-                    className="absolute rounded-3xl mx-auto left-0 right-0"
+                    className="absolute rounded-3xl mx-auto left-0 right-0 border border-white/5"
                     style={{ 
-                      backgroundColor: '#212121',
+                      backgroundColor: 'rgba(33, 33, 33, 0.6)',
+                      backdropFilter: 'blur(20px) saturate(150%)',
+                      WebkitBackdropFilter: 'blur(20px) saturate(150%)',
                       width: '83.4%',
                       height: '140px',
                       top: '38px', // 25px от 2-й карточки (13 + 25 = 38)
@@ -138,9 +140,11 @@ export const LiveScheduleCarousel = ({
                   />
                   {/* 2-я карточка */}
                   <motion.div 
-                    className="absolute rounded-3xl mx-auto left-0 right-0"
+                    className="absolute rounded-3xl mx-auto left-0 right-0 border border-white/5"
                     style={{ 
-                      backgroundColor: '#2C2C2C',
+                      backgroundColor: 'rgba(44, 44, 44, 0.65)',
+                      backdropFilter: 'blur(30px) saturate(160%)',
+                      WebkitBackdropFilter: 'blur(30px) saturate(160%)',
                       width: '93%',
                       height: '156px',
                       top: '13px', // 13px от 1-й карточки
@@ -152,9 +156,11 @@ export const LiveScheduleCarousel = ({
                   />
                   {/* 1-я карточка - основная с достижениями */}
                   <motion.div 
-                    className="relative rounded-3xl p-6 overflow-hidden"
+                    className="relative rounded-3xl p-6 overflow-hidden border border-white/10"
                     style={{ 
-                      backgroundColor: '#343434',
+                      backgroundColor: 'rgba(52, 52, 52, 0.7)',
+                      backdropFilter: 'blur(40px) saturate(180%)',
+                      WebkitBackdropFilter: 'blur(40px) saturate(180%)',
                       width: '100%',
                       zIndex: 3
                     }}
