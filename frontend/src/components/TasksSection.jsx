@@ -127,7 +127,7 @@ export const TasksSection = () => {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}
-          className="w-[160px] h-[200px] rounded-3xl bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200/50 p-4 flex flex-col"
+          className="w-[370px] h-[250px] rounded-3xl bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200/50 p-4 flex flex-col"
           style={{
             boxShadow: '0 4px 16px rgba(251, 191, 36, 0.1)'
           }}
