@@ -354,4 +354,68 @@ export const botAPI = {
   },
 };
 
+/**
+ * API методы для списка дел (задач)
+ */
+export const tasksAPI = {
+  /**
+   * Получить все задачи пользователя
+   * @param {number} telegramId - Telegram ID пользователя
+   */
+  getUserTasks: async (telegramId) => {
+    try {
+      const response = await api.get(`/tasks/${telegramId}`);
+      return response.data;
+    } catch (error) {
+      handleError(error);
+    }
+  },
+
+  /**
+   * Создать новую задачу
+   * @param {number} telegramId - Telegram ID пользователя
+   * @param {string} text - Текст задачи
+   */
+  createTask: async (telegramId, text) => {
+    try {
+      const response = await api.post('/tasks', {
+        telegram_id: telegramId,
+        text,
+      });
+      return response.data;
+    } catch (error) {
+      handleError(error);
+    }
+  },
+
+  /**
+   * Обновить задачу (текст или статус completed)
+   * @param {string} taskId - ID задачи
+   * @param {Object} updates - Обновления
+   * @param {string} updates.text - Новый текст задачи (опционально)
+   * @param {boolean} updates.completed - Статус выполнения (опционально)
+   */
+  updateTask: async (taskId, updates) => {
+    try {
+      const response = await api.put(`/tasks/${taskId}`, updates);
+      return response.data;
+    } catch (error) {
+      handleError(error);
+    }
+  },
+
+  /**
+   * Удалить задачу
+   * @param {string} taskId - ID задачи
+   */
+  deleteTask: async (taskId) => {
+    try {
+      const response = await api.delete(`/tasks/${taskId}`);
+      return response.data;
+    } catch (error) {
+      handleError(error);
+    }
+  },
+};
+
 export default api;
