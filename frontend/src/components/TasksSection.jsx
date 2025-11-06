@@ -965,6 +965,18 @@ const TaskGroup = ({
                     </div>
                   ) : (
                     <div className="flex items-start gap-3">
+                      {/* Drag Handle */}
+                      <Reorder.Item
+                        value={task}
+                        dragListener={true}
+                        className="flex-shrink-0 cursor-grab active:cursor-grabbing mt-0.5"
+                        onDragStart={() => {
+                          hapticFeedback && hapticFeedback('impact', 'light');
+                        }}
+                      >
+                        <GripVertical className="w-4 h-4 text-gray-400 hover:text-gray-600 transition-colors" />
+                      </Reorder.Item>
+
                       {/* Checkbox */}
                       <div 
                         onClick={() => onToggle(task.id)}
