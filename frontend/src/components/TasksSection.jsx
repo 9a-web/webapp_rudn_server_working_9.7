@@ -33,9 +33,19 @@ export const TasksSection = () => {
     }
   };
 
-  const handleAddTask = async (taskText) => {
+  const handleAddTask = async (taskData) => {
     try {
-      const newTask = await tasksAPI.createTask(user.id, taskText);
+      // taskData теперь может быть строкой (старый формат) или объектом (новый формат)
+      const requestData = typeof taskData === 'string' 
+        ? { text: taskData }
+        : taskData;
+      
+      const newTask = await tasksAPI.createTask(user.id, requestData.text, {
+        category: requestData.category,
+        priority: requestData.priority,
+        deadline: requestData.deadline,
+        subject: requestData.subject,
+      });
       setTasks([newTask, ...tasks]);
     } catch (error) {
       console.error('Error creating task:', error);
