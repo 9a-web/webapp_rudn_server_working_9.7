@@ -137,47 +137,159 @@ export const TasksSection = () => {
 
           {/* Список задач */}
           <div className="flex-1 overflow-y-auto space-y-2 scrollbar-thin scrollbar-thumb-yellow-300 scrollbar-track-transparent">
-            {todayTasks.map((task) => (
-              <motion.div
-                key={task.id}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => toggleTask(task.id)}
-                className="flex items-start gap-2 cursor-pointer group"
-              >
-                {/* Checkbox */}
-                <div 
-                  className={`
-                    w-4 h-4 rounded-md flex-shrink-0 flex items-center justify-center transition-all duration-200 mt-0.5
-                    ${task.completed 
-                      ? 'bg-gradient-to-br from-yellow-400 to-orange-400' 
-                      : 'bg-white border-2 border-[#E5E5E5] group-hover:border-yellow-400'
-                    }
-                  `}
-                >
-                  {task.completed && (
-                    <Check className="w-3 h-3 text-white" strokeWidth={3} />
-                  )}
-                </div>
+            {loading ? (
+              <div className="text-xs text-[#999999] text-center py-4">Загрузка...</div>
+            ) : todayTasks.length === 0 ? (
+              <div className="text-xs text-[#999999] text-center py-4">Нет задач</div>
+            ) : (
+              todayTasks.map((task) => {
+                const isEditing = editingTaskId === task.id;
+                
+                return (
+                  <motion.div
+                    key={task.id}
+                    drag="x"
+                    dragConstraints={{ left: -80, right: 0 }}
+                    dragElastic={0.2}
+                    onDragEnd={(e, info) => {
+                      // Свайп влево для удаления (только на мобильных)
+                      if (info.offset.x < -60 && window.innerWidth < 768) {
+                        handleDeleteTask(task.id);
+                      }
+                    }}
+                    className="relative"
+                  >
+                    {/* Фон для свайпа (кнопка удаления) */}
+                    <div className="absolute right-0 top-0 bottom-0 w-16 bg-red-500 rounded-lg flex items-center justify-center">
+                      <Trash2 className="w-4 h-4 text-white" />
+                    </div>
+                    
+                    {/* Контент задачи */}
+                    <motion.div
+                      whileTap={{ scale: 0.98 }}
+                      className="relative bg-gradient-to-br from-yellow-50 to-orange-50 rounded-lg p-2 group"
+                    >
+                      {isEditing ? (
+                        // Режим редактирования
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={editingText}
+                            onChange={(e) => setEditingText(e.target.value)}
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter') {
+                                handleSaveEdit(task.id);
+                              } else if (e.key === 'Escape') {
+                                handleCancelEdit();
+                              }
+                            }}
+                            className="flex-1 text-xs bg-white border border-yellow-300 rounded px-2 py-1 focus:outline-none focus:border-yellow-400"
+                            autoFocus
+                          />
+                          <button
+                            onClick={() => handleSaveEdit(task.id)}
+                            className="p-1 text-green-600 hover:bg-green-100 rounded"
+                          >
+                            <Check className="w-3 h-3" />
+                          </button>
+                          <button
+                            onClick={handleCancelEdit}
+                            className="p-1 text-red-600 hover:bg-red-100 rounded"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ) : (
+                        // Обычный режим
+                        <div className="flex items-start gap-2">
+                          {/* Checkbox */}
+                          <div 
+                            onClick={() => toggleTask(task.id)}
+                            className={`
+                              w-4 h-4 rounded-md flex-shrink-0 flex items-center justify-center transition-all duration-200 mt-0.5 cursor-pointer
+                              ${task.completed 
+                                ? 'bg-gradient-to-br from-yellow-400 to-orange-400' 
+                                : 'bg-white border-2 border-[#E5E5E5] group-hover:border-yellow-400'
+                              }
+                            `}
+                          >
+                            {task.completed && (
+                              <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                            )}
+                          </div>
 
-                {/* Текст задачи */}
-                <span 
-                  className={`
-                    text-xs leading-tight transition-all duration-200
-                    ${task.completed 
-                      ? 'text-[#999999] line-through' 
-                      : 'text-[#1C1C1E] group-hover:text-yellow-600'
-                    }
-                  `}
-                >
-                  {task.text}
-                </span>
-              </motion.div>
-            ))}
+                          {/* Текст задачи */}
+                          <span 
+                            className={`
+                              flex-1 text-xs leading-tight transition-all duration-200
+                              ${task.completed 
+                                ? 'text-[#999999] line-through' 
+                                : 'text-[#1C1C1E]'
+                              }
+                            `}
+                          >
+                            {task.text}
+                          </span>
+                          
+                          {/* Кнопки редактирования/удаления (десктоп) */}
+                          <div className="hidden md:flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button
+                              onClick={() => handleStartEdit(task)}
+                              className="p-1 text-yellow-600 hover:bg-yellow-100 rounded"
+                              title="Редактировать"
+                            >
+                              <Edit2 className="w-3 h-3" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteTask(task.id)}
+                              className="p-1 text-red-600 hover:bg-red-100 rounded"
+                              title="Удалить"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </motion.div>
+                  </motion.div>
+                );
+              })
+            )}
           </div>
 
-          {/* Счетчик выполненных задач */}
+          {/* Input для добавления новой задачи */}
           <div className="mt-3 pt-3 border-t border-yellow-200/30">
-            <p className="text-xs text-[#999999] text-center">
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={newTaskText}
+                onChange={(e) => setNewTaskText(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handleAddTask();
+                  }
+                }}
+                placeholder="Новая задача..."
+                className="flex-1 text-xs bg-white border border-yellow-200 rounded-lg px-2 py-1.5 focus:outline-none focus:border-yellow-400 placeholder-[#999999]"
+              />
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={handleAddTask}
+                disabled={!newTaskText.trim()}
+                className={`
+                  w-7 h-7 rounded-lg flex items-center justify-center transition-all
+                  ${newTaskText.trim()
+                    ? 'bg-gradient-to-br from-yellow-400 to-orange-400 text-white'
+                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  }
+                `}
+              >
+                <Plus className="w-4 h-4" strokeWidth={2.5} />
+              </motion.button>
+            </div>
+            
+            {/* Счетчик */}
+            <p className="text-xs text-[#999999] text-center mt-2">
               {todayTasks.filter(t => t.completed).length} / {todayTasks.length} выполнено
             </p>
           </div>
