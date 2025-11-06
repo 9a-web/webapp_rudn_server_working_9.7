@@ -42,7 +42,11 @@ from models import (
     TrackActionRequest,
     NewAchievementsResponse,
     WeatherResponse,
-    BotInfo
+    BotInfo,
+    Task,
+    TaskCreate,
+    TaskUpdate,
+    TaskResponse
 )
 from notifications import get_notification_service
 from scheduler import get_scheduler
