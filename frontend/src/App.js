@@ -395,6 +395,11 @@ const Home = () => {
     setNewAchievement(null);
   };
 
+  const handleTabChange = (newTab) => {
+    hapticFeedback('impact', 'light');
+    setActiveTab(newTab);
+  };
+
   // Показываем GroupSelector
   if (showGroupSelector) {
     return (
