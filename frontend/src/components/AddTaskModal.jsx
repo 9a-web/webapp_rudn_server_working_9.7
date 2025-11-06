@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Plus } from 'lucide-react';
+import { X, Plus, Calendar, Flag, Tag, BookOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { modalVariants, backdropVariants } from '../utils/animations';
 
@@ -7,10 +7,30 @@ export const AddTaskModal = ({
   isOpen, 
   onClose, 
   onAddTask, 
-  hapticFeedback 
+  hapticFeedback,
+  scheduleSubjects = [] // Список предметов из расписания
 }) => {
   const [taskText, setTaskText] = useState('');
+  const [category, setCategory] = useState(null);
+  const [priority, setPriority] = useState('medium');
+  const [deadline, setDeadline] = useState('');
+  const [subject, setSubject] = useState('');
   const [saving, setSaving] = useState(false);
+  
+  // Категории задач
+  const categories = [
+    { id: 'study', label: 'Учеба', emoji: '📚', color: 'from-blue-400 to-blue-500' },
+    { id: 'personal', label: 'Личное', emoji: '🏠', color: 'from-green-400 to-green-500' },
+    { id: 'sport', label: 'Спорт', emoji: '🏃', color: 'from-red-400 to-red-500' },
+    { id: 'project', label: 'Проекты', emoji: '💼', color: 'from-purple-400 to-purple-500' },
+  ];
+  
+  // Приоритеты
+  const priorities = [
+    { id: 'low', label: 'Низкий', color: 'bg-green-100 text-green-700 border-green-200' },
+    { id: 'medium', label: 'Средний', color: 'bg-yellow-100 text-yellow-700 border-yellow-200' },
+    { id: 'high', label: 'Высокий', color: 'bg-red-100 text-red-700 border-red-200' },
+  ];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
