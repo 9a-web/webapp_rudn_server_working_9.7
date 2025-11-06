@@ -51,7 +51,7 @@ export const AddTaskModal = ({
         onClick={handleClose}
       >
         <motion.div 
-          className="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl"
+          className="bg-white rounded-3xl p-6 w-full max-w-lg shadow-2xl"
           initial="initial"
           animate="animate"
           exit="exit"
