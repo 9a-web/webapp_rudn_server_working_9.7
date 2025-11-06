@@ -40,10 +40,24 @@ export const AddTaskModal = ({
     try {
       setSaving(true);
       hapticFeedback && hapticFeedback('impact', 'medium');
-      await onAddTask(taskText.trim());
       
-      // Очищаем поле и закрываем модальное окно
+      // Создаем объект задачи с дополнительными полями
+      const taskData = {
+        text: taskText.trim(),
+        category: category,
+        priority: priority,
+        deadline: deadline ? new Date(deadline).toISOString() : null,
+        subject: subject || null,
+      };
+      
+      await onAddTask(taskData);
+      
+      // Очищаем все поля и закрываем модальное окно
       setTaskText('');
+      setCategory(null);
+      setPriority('medium');
+      setDeadline('');
+      setSubject('');
       onClose();
     } catch (error) {
       console.error('Error adding task:', error);
@@ -55,6 +69,10 @@ export const AddTaskModal = ({
   const handleClose = () => {
     if (saving) return; // Не закрываем во время сохранения
     setTaskText('');
+    setCategory(null);
+    setPriority('medium');
+    setDeadline('');
+    setSubject('');
     onClose();
   };
 
