@@ -44,7 +44,7 @@ export const TasksSection = () => {
   };
 
   const handleOpenAddModal = () => {
-    hapticFeedback?.impactOccurred('light');
+    hapticFeedback && hapticFeedback('impact', 'light');
     setIsAddModalOpen(true);
   };
 
