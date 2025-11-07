@@ -59,6 +59,9 @@ const Home = () => {
 
   // Состояние для нижнего меню навигации
   const [activeTab, setActiveTab] = useState('home');
+  
+  // Состояние для отслеживания модальных окон (скрывать нижнее меню)
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Загрузка данных пользователя при монтировании
   useEffect(() => {
