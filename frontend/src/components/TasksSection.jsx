@@ -670,30 +670,25 @@ export const TasksSection = ({ userSettings, selectedDate, weekNumber }) => {
                               })()}
                             </div>
                             
-                            {/* Кнопки редактирования/удаления (десктоп) */}
-                            <div className="hidden md:flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <button
-                                onClick={() => handleStartEdit(task)}
-                                className="p-1 text-yellow-600 hover:bg-yellow-100 rounded"
-                                title="Редактировать"
-                              >
-                                <Edit2 className="w-3 h-3" />
-                              </button>
-                              <button
-                                onClick={() => handleDeleteTask(task.id)}
-                                className="p-1 text-red-600 hover:bg-red-100 rounded"
-                                title="Удалить"
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </button>
-                            </div>
+                            {/* Кнопка удаления (всегда видна) */}
+                            <button
+                              onClick={() => {
+                                hapticFeedback && hapticFeedback('impact', 'medium');
+                                handleDeleteTask(task.id);
+                              }}
+                              className="flex-shrink-0 p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors mt-0.5"
+                              title="Удалить задачу"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
                           </div>
                         </div>
                       )}
                     </motion.div>
-                  </motion.div>
+                  </Reorder.Item>
                 );
-              })
+              })}
+            </Reorder.Group>
             )}
           </div>
 
