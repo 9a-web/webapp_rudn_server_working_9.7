@@ -13,6 +13,63 @@
         <!-- Telegram WebApp SDK -->
         <script src="https://telegram.org/js/telegram-web-app.js"></script>
         
+        <!-- ⭐️ Telegram Full Screen Initialization -->
+        <script>
+            // Инициализируем full screen сразу при загрузке
+            (function() {
+                console.log('🟢 [index.html] Начало инициализации Telegram WebApp');
+                
+                // Ждем загрузки Telegram WebApp API
+                var checkTelegram = setInterval(function() {
+                    if (window.Telegram && window.Telegram.WebApp) {
+                        clearInterval(checkTelegram);
+                        
+                        var tg = window.Telegram.WebApp;
+                        console.log('🟢 [index.html] Telegram WebApp API загружен');
+                        console.log('📊 [index.html] Состояние до ready():', {
+                            isExpanded: tg.isExpanded,
+                            viewportHeight: tg.viewportHeight
+                        });
+                        
+                        // Вызываем ready
+                        tg.ready();
+                        console.log('✅ [index.html] tg.ready() вызван');
+                        
+                        // Агрессивно вызываем expand много раз
+                        var expandAttempts = 0;
+                        var maxAttempts = 20;
+                        
+                        var tryExpand = function() {
+                            expandAttempts++;
+                            console.log('🔄 [index.html] Попытка expand #' + expandAttempts);
+                            tg.expand();
+                            
+                            setTimeout(function() {
+                                console.log('📏 [index.html] isExpanded:', tg.isExpanded, ', viewportHeight:', tg.viewportHeight);
+                                
+                                if (!tg.isExpanded && expandAttempts < maxAttempts) {
+                                    setTimeout(tryExpand, 100);
+                                } else if (tg.isExpanded) {
+                                    console.log('🎉 [index.html] УСПЕХ! WebApp развернут на полный экран');
+                                }
+                            }, 50);
+                        };
+                        
+                        // Начинаем попытки expand
+                        tryExpand();
+                        
+                        // Дополнительные вызовы с интервалами
+                        setTimeout(function() { tg.expand(); }, 10);
+                        setTimeout(function() { tg.expand(); }, 50);
+                        setTimeout(function() { tg.expand(); }, 100);
+                        setTimeout(function() { tg.expand(); }, 200);
+                        setTimeout(function() { tg.expand(); }, 500);
+                        setTimeout(function() { tg.expand(); }, 1000);
+                    }
+                }, 10);
+            })();
+        </script>
+        
         <title>RUDN Schedule</title>
         <script src="https://assets.emergent.sh/scripts/emergent-main.js"></script>
         <!--
