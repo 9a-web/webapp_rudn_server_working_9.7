@@ -25,23 +25,40 @@ export const TelegramProvider = ({ children }) => {
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
       const tg = window.Telegram.WebApp;
       
-      // Настройка для полноэкранного режима
+      // 1. Сначала готовим WebApp
       tg.ready();
       
-      // Расширяем WebApp на весь экран
+      // 2. ПОЛНОЭКРАННЫЙ РЕЖИМ - расширяем на весь экран
       tg.expand();
       
-      // Отключаем вертикальные свайпы (для лучшего UX)
+      // 3. Принудительно устанавливаем viewport height
+      if (tg.isExpanded === false) {
+        // Если expand не сработал, пробуем еще раз через setTimeout
+        setTimeout(() => {
+          tg.expand();
+        }, 100);
+      }
+      
+      // 4. Отключаем вертикальные свайпы (чтобы не закрывалось случайно)
       if (tg.disableVerticalSwipes) {
         tg.disableVerticalSwipes();
       }
       
-      // Включаем закрытие по свайпу вниз (если поддерживается)
+      // 5. Включаем подтверждение закрытия (защита от случайного выхода)
       if (tg.enableClosingConfirmation) {
         tg.enableClosingConfirmation();
       }
       
-      // Устанавливаем цвета темы для нативного вида
+      // 6. Устанавливаем полноэкранный режим через requestFullscreen (для web версии)
+      if (tg.requestFullscreen && !tg.isFullscreen) {
+        try {
+          tg.requestFullscreen();
+        } catch (e) {
+          console.log('Fullscreen request failed:', e);
+        }
+      }
+      
+      // 7. Устанавливаем цвета темы для нативного вида
       if (tg.setHeaderColor) {
         tg.setHeaderColor('#1C1C1E');
       }
@@ -49,9 +66,20 @@ export const TelegramProvider = ({ children }) => {
         tg.setBackgroundColor('#1C1C1E');
       }
       
-      // Устанавливаем цвет bottom bar (если поддерживается)
+      // 8. Устанавливаем цвет bottom bar (если поддерживается)
       if (tg.setBottomBarColor) {
         tg.setBottomBarColor('#1C1C1E');
+      }
+      
+      // 9. Убираем системные отступы (safe area) если нужно
+      // tg.safeAreaInset можно использовать для проверки отступов
+      
+      // 10. Устанавливаем viewport meta для мобильных устройств
+      const viewportMeta = document.querySelector('meta[name="viewport"]');
+      if (viewportMeta) {
+        viewportMeta.setAttribute('content', 
+          'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover'
+        );
       }
       
       // Получаем данные пользователя
