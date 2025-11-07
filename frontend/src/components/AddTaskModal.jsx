@@ -157,25 +157,25 @@ export const AddTaskModal = ({
           {/* Form - прокручиваемый контент */}
           <div className="flex-1 overflow-y-auto overscroll-contain">
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 px-4 sm:px-6 py-4 sm:py-5">
-            {/* Описание задачи */}
-            <div>
-              <label className="block text-sm font-medium text-[#1C1C1E] mb-2">
-                Описание задачи
-              </label>
-              <textarea
-                value={taskText}
-                onChange={(e) => setTaskText(e.target.value)}
-                placeholder="Например: Купить продукты, Подготовиться к экзамену..."
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent resize-none placeholder-gray-400 text-[#1C1C1E]"
-                rows="3"
-                autoFocus
-                disabled={saving}
-                maxLength={500}
-              />
-              <p className="text-xs text-gray-400 mt-1 text-right">
-                {taskText.length} / 500
-              </p>
-            </div>
+              {/* Описание задачи */}
+              <div>
+                <label className="block text-xs sm:text-sm font-medium text-[#1C1C1E] mb-2">
+                  Описание задачи
+                </label>
+                <textarea
+                  value={taskText}
+                  onChange={(e) => setTaskText(e.target.value)}
+                  placeholder="Например: Купить продукты, Подготовиться к экзамену..."
+                  className="w-full px-3 py-2.5 sm:px-4 sm:py-3 bg-gray-50 border border-gray-200 rounded-xl sm:rounded-2xl focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent resize-none placeholder-gray-400 text-[#1C1C1E] text-sm sm:text-base"
+                  rows="3"
+                  autoFocus
+                  disabled={saving}
+                  maxLength={500}
+                />
+                <p className="text-[10px] sm:text-xs text-gray-400 mt-1 text-right">
+                  {taskText.length} / 500
+                </p>
+              </div>
 
             {/* Категория */}
             <div>
