@@ -90,9 +90,36 @@ export const TasksSection = ({ userSettings, selectedDate, weekNumber, onModalSt
     }
   };
 
-  // Обновление порядка задач после перетаскивания
+  // Обновление порядка задач после перетаскивания в карточке "Сегодня"
   const handleReorderTasks = (newOrder) => {
-    setTasks(newOrder);
+    // newOrder содержит только задачи из todayTasks (первые 10)
+    // Нужно обновить порядок в полном массиве tasks
+    
+    // Создаем Map для быстрого поиска новых позиций
+    const orderMap = new Map();
+    newOrder.forEach((task, index) => {
+      orderMap.set(task.id, index);
+    });
+    
+    // Обновляем tasks, сохраняя порядок из newOrder для задач в todayTasks
+    const updatedTasks = [...tasks].sort((a, b) => {
+      const orderA = orderMap.has(a.id) ? orderMap.get(a.id) : Infinity;
+      const orderB = orderMap.has(b.id) ? orderMap.get(b.id) : Infinity;
+      
+      // Если обе задачи из todayTasks - сортируем по новому порядку
+      if (orderA !== Infinity && orderB !== Infinity) {
+        return orderA - orderB;
+      }
+      // Если только одна задача из todayTasks - она идет первой
+      if (orderA !== Infinity) return -1;
+      if (orderB !== Infinity) return 1;
+      
+      // Для остальных задач сохраняем текущий порядок
+      return 0;
+    });
+    
+    setTasks(updatedTasks);
+    
     // Здесь можно добавить сохранение порядка на сервер при необходимости
     hapticFeedback && hapticFeedback('impact', 'light');
   };
