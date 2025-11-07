@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { X, Plus, Calendar, Flag, Tag, BookOpen } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Plus, Calendar, Flag, Tag, BookOpen, ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import { modalVariants, backdropVariants } from '../utils/animations';
 
 export const AddTaskModal = ({ 
