@@ -177,37 +177,38 @@ export const AddTaskModal = ({
                 </p>
               </div>
 
-            {/* Категория */}
-            <div>
-              <label className="block text-sm font-medium text-[#1C1C1E] mb-2 flex items-center gap-2">
-                <Tag className="w-4 h-4" />
-                Категория
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                {categories.map((cat) => (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    onClick={() => {
-                      setCategory(category === cat.id ? null : cat.id);
-                      hapticFeedback && hapticFeedback('selection');
-                    }}
-                    disabled={saving}
-                    className={`
-                      px-3 py-2 rounded-xl border-2 transition-all text-sm font-medium flex items-center gap-2 justify-center
-                      ${category === cat.id
-                        ? `bg-gradient-to-r ${cat.color} text-white border-transparent shadow-md`
-                        : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
-                      }
-                      disabled:opacity-50
-                    `}
-                  >
-                    <span>{cat.emoji}</span>
-                    <span>{cat.label}</span>
-                  </button>
-                ))}
+              {/* Категория */}
+              <div>
+                <label className="block text-xs sm:text-sm font-medium text-[#1C1C1E] mb-2 flex items-center gap-1.5 sm:gap-2">
+                  <Tag className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  Категория
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {categories.map((cat) => (
+                    <motion.button
+                      key={cat.id}
+                      type="button"
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => {
+                        setCategory(category === cat.id ? null : cat.id);
+                        hapticFeedback && hapticFeedback('selection');
+                      }}
+                      disabled={saving}
+                      className={`
+                        px-2.5 py-2 sm:px-3 sm:py-2.5 rounded-lg sm:rounded-xl border-2 transition-all text-xs sm:text-sm font-medium flex items-center gap-1.5 sm:gap-2 justify-center touch-manipulation
+                        ${category === cat.id
+                          ? `bg-gradient-to-r ${cat.color} text-white border-transparent shadow-md`
+                          : 'bg-white border-gray-200 text-gray-700 active:bg-gray-50'
+                        }
+                        disabled:opacity-50
+                      `}
+                    >
+                      <span className="text-sm sm:text-base">{cat.emoji}</span>
+                      <span>{cat.label}</span>
+                    </motion.button>
+                  ))}
+                </div>
               </div>
-            </div>
 
             {/* Приоритет */}
             <div>
