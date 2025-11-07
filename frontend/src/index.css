@@ -136,13 +136,15 @@ body {
 }
 
 #root {
-  /* ПОЛНОЭКРАННЫЙ ROOT контейнер */
+  /* ⭐️ ПОЛНОЭКРАННЫЙ ROOT контейнер для Telegram Web App */
   position: relative;
   height: 100%;
   height: 100vh;
   height: 100dvh;
+  height: var(--tg-viewport-height, 100vh); /* ⭐️ Используем Telegram viewport */
   min-height: 100vh;
   min-height: -webkit-fill-available;
+  min-height: var(--tg-viewport-height, 100vh);
   width: 100%;
   width: 100vw;
   max-width: 100vw;
