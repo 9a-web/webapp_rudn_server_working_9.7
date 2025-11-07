@@ -59,6 +59,11 @@
     /* Animations */
     --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-spring: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    
+    /* ⭐️ Telegram WebApp Full Screen Heights */
+    /* Эти переменные будут установлены из JavaScript (TelegramContext.js) */
+    --tg-viewport-height: 100vh;  /* Фактическая высота viewport в Telegram */
+    --tg-viewport-stable-height: 100vh;  /* Стабильная высота (не меняется при клавиатуре) */
   }
 }
 
