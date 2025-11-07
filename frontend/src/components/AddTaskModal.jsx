@@ -16,6 +16,21 @@ export const AddTaskModal = ({
   const [deadline, setDeadline] = useState('');
   const [subject, setSubject] = useState('');
   const [saving, setSaving] = useState(false);
+  const [dragY, setDragY] = useState(0);
+  
+  const modalRef = useRef(null);
+  
+  // Блокируем скролл страницы при открытии модального окна
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
   
   // Категории задач
   const categories = [
