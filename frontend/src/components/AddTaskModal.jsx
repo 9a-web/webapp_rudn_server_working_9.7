@@ -210,36 +210,37 @@ export const AddTaskModal = ({
                 </div>
               </div>
 
-            {/* Приоритет */}
-            <div>
-              <label className="block text-sm font-medium text-[#1C1C1E] mb-2 flex items-center gap-2">
-                <Flag className="w-4 h-4" />
-                Приоритет
-              </label>
-              <div className="flex gap-2">
-                {priorities.map((prior) => (
-                  <button
-                    key={prior.id}
-                    type="button"
-                    onClick={() => {
-                      setPriority(prior.id);
-                      hapticFeedback && hapticFeedback('selection');
-                    }}
-                    disabled={saving}
-                    className={`
-                      flex-1 px-3 py-2 rounded-xl border-2 transition-all text-sm font-medium
-                      ${priority === prior.id
-                        ? `${prior.color} border-transparent`
-                        : 'bg-white border-gray-200 text-gray-700 hover:border-gray-300'
-                      }
-                      disabled:opacity-50
-                    `}
-                  >
-                    {prior.label}
-                  </button>
-                ))}
+              {/* Приоритет */}
+              <div>
+                <label className="block text-xs sm:text-sm font-medium text-[#1C1C1E] mb-2 flex items-center gap-1.5 sm:gap-2">
+                  <Flag className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  Приоритет
+                </label>
+                <div className="flex gap-1.5 sm:gap-2">
+                  {priorities.map((prior) => (
+                    <motion.button
+                      key={prior.id}
+                      type="button"
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => {
+                        setPriority(prior.id);
+                        hapticFeedback && hapticFeedback('selection');
+                      }}
+                      disabled={saving}
+                      className={`
+                        flex-1 px-2 py-2 sm:px-3 sm:py-2.5 rounded-lg sm:rounded-xl border-2 transition-all text-xs sm:text-sm font-medium touch-manipulation
+                        ${priority === prior.id
+                          ? `${prior.color} border-transparent`
+                          : 'bg-white border-gray-200 text-gray-700 active:bg-gray-50'
+                        }
+                        disabled:opacity-50
+                      `}
+                    >
+                      {prior.label}
+                    </motion.button>
+                  ))}
+                </div>
               </div>
-            </div>
 
             {/* Дедлайн */}
             <div>
