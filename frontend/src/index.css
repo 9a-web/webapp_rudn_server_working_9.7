@@ -148,14 +148,23 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
-/* Telegram Web App specific styles */
+/* Telegram Web App specific styles - FULLSCREEN MODE */
 .telegram-webapp {
-  max-width: 100vw;
-  width: 100%;
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
-  overflow-x: hidden;
   position: relative;
+  height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
+  width: 100%;
+  width: 100vw;
+  max-width: 100vw;
+  overflow-x: hidden;
+  overflow-y: auto;
+  
+  /* Для Telegram WebApp */
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: pan-y pinch-zoom;
 }
 
 /* Custom scrollbar */
