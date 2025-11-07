@@ -5,7 +5,7 @@ import { tasksAPI, scheduleAPI } from '../services/api';
 import { useTelegram } from '../contexts/TelegramContext';
 import { AddTaskModal } from './AddTaskModal';
 
-export const TasksSection = ({ userSettings, selectedDate, weekNumber }) => {
+export const TasksSection = ({ userSettings, selectedDate, weekNumber, onModalStateChange }) => {
   const { user, hapticFeedback } = useTelegram();
   
   const [tasks, setTasks] = useState([]);
