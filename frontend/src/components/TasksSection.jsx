@@ -446,7 +446,6 @@ export const TasksSection = ({ userSettings, selectedDate, weekNumber, onModalSt
     return 'На эту дату';
   };
 
-  const groupedTasks = groupTasksByDeadline();
   const categories = [
     { id: 'study', label: 'Учеба', emoji: '📚', color: 'from-blue-400 to-blue-500' },
     { id: 'personal', label: 'Личное', emoji: '🏠', color: 'from-green-400 to-green-500' },
