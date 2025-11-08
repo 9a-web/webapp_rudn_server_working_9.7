@@ -33,26 +33,26 @@ class NotificationScheduler:
     
     def start(self):
         """Запустить планировщик"""
-        # Проверяем уведомления каждую минуту
+        # Проверяем уведомления каждые 5 минут (оптимизировано с 1 минуты)
         self.scheduler.add_job(
             self.check_and_send_notifications,
-            trigger=IntervalTrigger(minutes=1),
+            trigger=IntervalTrigger(minutes=5),
             id='check_notifications',
             name='Check and send class notifications',
             replace_existing=True
         )
         
-        # Очищаем старые записи уведомлений раз в час
+        # Очищаем старые записи уведомлений раз в 6 часов (оптимизировано с 1 часа)
         self.scheduler.add_job(
             self.cleanup_old_notifications,
-            trigger=IntervalTrigger(hours=1),
+            trigger=IntervalTrigger(hours=6),
             id='cleanup_notifications',
             name='Cleanup old notification records',
             replace_existing=True
         )
         
         self.scheduler.start()
-        logger.info("Notification scheduler started")
+        logger.info("Notification scheduler started (optimized intervals)")
     
     def stop(self):
         """Остановить планировщик"""
