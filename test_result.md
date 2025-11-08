@@ -542,6 +542,18 @@ frontend:
     stuck_count: 0
     priority: "high"
     needs_retesting: true
+
+  - task: "Tasks Section - Drag and Drop Fix for All Task Lists"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/TasksSection.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "✅ ИСПРАВЛЕНИЕ DRAG AND DROP В ОСНОВНОМ СПИСКЕ ЗАДАЧ: Обнаружена и исправлена проблема с перетаскиванием задач в компоненте TaskGroup (основной список задач). ПРОБЛЕМА: В строках 1026-1035 был вложенный Reorder.Item внутри другого Reorder.Item для drag handle, что создавало конфликт и делало перетаскивание невозможным. Drag and drop работал только в карточке 'Сегодня' (TodayTaskItem), но НЕ работал в основном списке. РЕШЕНИЕ: Создан новый компонент TaskGroupItem с правильной реализацией drag and drop (аналогично TodayTaskItem): 1) Использован useDragControls hook из framer-motion. 2) Drag handle использует onPointerDown с dragControls.start(e) вместо вложенного Reorder.Item. 3) Добавлены классы touch-none и select-none для корректной работы на мобильных. 4) Добавлен style={{ touchAction: 'none' }} для предотвращения браузерных жестов. 5) Реализован haptic feedback при начале перетаскивания. 6) Упрощена структура TaskGroup - теперь использует TaskGroupItem вместо вложенных Reorder.Item. РЕЗУЛЬТАТ: Drag and drop теперь работает ВЕЗДЕ: ✅ В карточке 'Сегодня' (TodayTaskItem), ✅ В основном списке задач (TaskGroupItem), ✅ На мобильных устройствах, ✅ С haptic feedback, ✅ Независимо от checkbox и кнопок. Frontend скомпилирован успешно без ошибок. Обновлена документация /app/DRAG_AND_DROP_FIX.md с описанием финального исправления."
   
   - task: "Tasks Priority Sorting - Remove 'No Deadline' Section"
     implemented: true
