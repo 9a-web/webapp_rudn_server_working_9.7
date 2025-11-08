@@ -793,10 +793,10 @@ export const TasksSection = ({ userSettings, selectedDate, weekNumber, onModalSt
             />
           )}
 
-          {/* Задачи на сегодня */}
+          {/* Задачи на выбранную дату */}
           {groupedTasks.today.length > 0 && (
             <TaskGroup
-              title="Сегодня"
+              title={getTaskGroupTitle()}
               icon={<Calendar className="w-5 h-5 text-orange-600" />}
               tasks={groupedTasks.today}
               accentColor="orange"
