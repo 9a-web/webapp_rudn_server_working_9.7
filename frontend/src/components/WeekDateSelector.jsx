@@ -215,22 +215,6 @@ export const WeekDateSelector = ({
           })}
         </div>
       </div>
-      
-      {/* Легенда (опционально) */}
-      {weekDates.length > 0 && (
-        <div className="mt-3 flex items-center justify-center gap-4 text-xs text-gray-500">
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-orange-500" />
-            <span>Сегодня</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-6 h-6 rounded-full border-2 border-orange-400 flex items-center justify-center">
-              <span className="text-[10px] font-bold text-orange-600">%</span>
-            </div>
-            <span>Прогресс</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
