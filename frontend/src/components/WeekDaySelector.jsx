@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { daySelectorVariants, listItemVariants } from '../utils/animations';
 import { useSwipe } from '../utils/gestures';
 
-export const WeekDaySelector = ({ selectedDate, onDateSelect, weekNumber = 1, hapticFeedback }) => {
+export const WeekDaySelector = React.memo(({ selectedDate, onDateSelect, weekNumber = 1, hapticFeedback }) => {
   const [weekDays, setWeekDays] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const { t } = useTranslation();
