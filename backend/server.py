@@ -534,9 +534,13 @@ async def get_weather_endpoint():
 # ============ Эндпоинты для информации о боте ============
 
 @api_router.get("/bot-info", response_model=BotInfo)
-@cache(ttl=3600)  # Кешируем на 1 час
 async def get_bot_info():
-    """Получить информацию о боте (username, id и т.д.)"""
+    """Получить информацию о боте (username, id и т.д.) с кешированием на 1 час"""
+    # Проверяем кеш
+    cached_bot_info = cache.get("bot_info")
+    if cached_bot_info:
+        return cached_bot_info
+    
     try:
         from telegram import Bot
         
@@ -547,7 +551,7 @@ async def get_bot_info():
         bot = Bot(token=bot_token)
         me = await bot.get_me()
         
-        return BotInfo(
+        bot_info = BotInfo(
             username=me.username or "",
             first_name=me.first_name,
             id=me.id,
@@ -555,6 +559,10 @@ async def get_bot_info():
             can_read_all_group_messages=me.can_read_all_group_messages or False,
             supports_inline_queries=me.supports_inline_queries or False
         )
+        
+        # Кешируем на 1 час
+        cache.set("bot_info", bot_info, ttl_minutes=60)
+        return bot_info
     except Exception as e:
         logger.error(f"Ошибка при получении информации о боте: {e}")
         raise HTTPException(status_code=500, detail=str(e))
