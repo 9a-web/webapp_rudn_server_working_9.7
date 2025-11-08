@@ -817,28 +817,6 @@ export const TasksSection = ({ userSettings, selectedDate, weekNumber, onModalSt
               hapticFeedback={hapticFeedback}
             />
           )}
-
-          {/* Задачи без дедлайна */}
-          {groupedTasks.noDeadline.length > 0 && (
-            <TaskGroup
-              title="Без срока"
-              icon={<ClipboardList className="w-5 h-5 text-gray-600" />}
-              tasks={groupedTasks.noDeadline}
-              accentColor="gray"
-              onToggle={toggleTask}
-              onEdit={handleStartEdit}
-              onDelete={handleDeleteTask}
-              editingTaskId={editingTaskId}
-              editingText={editingText}
-              setEditingText={setEditingText}
-              onSaveEdit={handleSaveEdit}
-              onCancelEdit={handleCancelEdit}
-              getCategoryEmoji={getCategoryEmoji}
-              getPriorityColor={getPriorityColor}
-              getDeadlineStatus={getDeadlineStatus}
-              hapticFeedback={hapticFeedback}
-            />
-          )}
         </div>
       </div>
 
