@@ -337,22 +337,18 @@ export const TasksSection = ({ userSettings, selectedDate, weekNumber, onModalSt
     return filtered;
   };
 
-  // Группировка задач по срокам относительно выбранной даты
+  // Фильтрация задач для выбранной даты (показываем только задачи на эту дату)
   const groupTasksByDeadline = () => {
     const filteredTasks = getFilteredAndSortedTasks();
-    const now = new Date();
     
-    // Используем выбранную дату как точку отсчета для группировки
+    // Используем выбранную дату для фильтрации
     const selectedDateStart = new Date(tasksSelectedDate);
     selectedDateStart.setHours(0, 0, 0, 0);
     
     const selectedDateEnd = new Date(tasksSelectedDate);
     selectedDateEnd.setHours(23, 59, 59, 999);
     
-    const overdue = [];
     const today = [];
-    const thisWeek = [];
-    const later = [];
     const noDeadline = [];
     
     filteredTasks.forEach(task => {
@@ -363,27 +359,14 @@ export const TasksSection = ({ userSettings, selectedDate, weekNumber, onModalSt
       
       const deadline = new Date(task.deadline);
       
-      // Просроченные: дедлайн раньше выбранной даты И раньше текущего момента
-      if (deadline < selectedDateStart && deadline < now) {
-        overdue.push(task);
-      } 
-      // Сегодня (на выбранную дату): дедлайн в пределах выбранного дня
-      else if (deadline >= selectedDateStart && deadline <= selectedDateEnd) {
+      // Показываем только задачи с дедлайном на выбранную дату
+      if (deadline >= selectedDateStart && deadline <= selectedDateEnd) {
         today.push(task);
-      } 
-      // На этой неделе: дедлайн в течение 7 дней от выбранной даты
-      else {
-        const diffDays = (deadline - selectedDateStart) / (1000 * 60 * 60 * 24);
-        
-        if (diffDays > 0 && diffDays <= 7) {
-          thisWeek.push(task);
-        } else if (diffDays > 7) {
-          later.push(task);
-        }
       }
     });
     
-    return { overdue, today, thisWeek, later, noDeadline };
+    // Возвращаем только задачи на выбранную дату и без дедлайна
+    return { today, noDeadline };
   };
 
   // Фильтруем задачи для выбранной даты
