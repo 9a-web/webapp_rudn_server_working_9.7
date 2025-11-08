@@ -337,45 +337,7 @@ export const TasksSection = ({ userSettings, selectedDate, weekNumber, onModalSt
     return filtered;
   };
 
-  // Фильтрация задач для выбранной даты (показываем только задачи на эту дату)
-  const groupTasksByDeadline = () => {
-    const filteredTasks = getFilteredAndSortedTasks();
-    
-    // Используем выбранную дату для фильтрации
-    const selectedDateStart = new Date(tasksSelectedDate);
-    selectedDateStart.setHours(0, 0, 0, 0);
-    
-    const selectedDateEnd = new Date(tasksSelectedDate);
-    selectedDateEnd.setHours(23, 59, 59, 999);
-    
-    const allTasks = [];
-    
-    filteredTasks.forEach(task => {
-      // Включаем задачи без дедлайна
-      if (!task.deadline) {
-        allTasks.push(task);
-        return;
-      }
-      
-      const deadline = new Date(task.deadline);
-      
-      // Показываем задачи с дедлайном на выбранную дату
-      if (deadline >= selectedDateStart && deadline <= selectedDateEnd) {
-        allTasks.push(task);
-      }
-    });
-    
-    // Сортируем все задачи по приоритету: high → medium → low
-    const priorityOrder = { high: 3, medium: 2, low: 1 };
-    allTasks.sort((a, b) => {
-      const priorityA = priorityOrder[a.priority] || 2;
-      const priorityB = priorityOrder[b.priority] || 2;
-      return priorityB - priorityA;
-    });
-    
-    // Возвращаем все задачи в одной группе
-    return { today: allTasks };
-  };
+  // Примечание: groupTasksByDeadline() удалена, так как все задачи теперь отображаются в одной карточке
 
   // Получаем все задачи для выбранной даты с сортировкой по приоритету
   const getTasksForSelectedDate = () => {
