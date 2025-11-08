@@ -27,7 +27,7 @@ export const BottomNavigation = React.memo(({ activeTab = 'home', onTabChange, h
     }
   ];
 
-  const handleTabClick = (tabId) => {
+  const handleTabClick = useCallback((tabId) => {
     if (hapticFeedback?.impactOccurred) {
       try {
         hapticFeedback.impactOccurred('light');
@@ -36,7 +36,7 @@ export const BottomNavigation = React.memo(({ activeTab = 'home', onTabChange, h
       }
     }
     onTabChange?.(tabId);
-  };
+  }, [hapticFeedback, onTabChange]);
 
   return (
     <motion.nav
