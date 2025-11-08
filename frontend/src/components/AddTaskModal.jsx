@@ -8,7 +8,8 @@ export const AddTaskModal = ({
   onClose, 
   onAddTask, 
   hapticFeedback,
-  scheduleSubjects = [] // Список предметов из расписания
+  scheduleSubjects = [], // Список предметов из расписания
+  selectedDate = new Date() // Выбранная дата для создания задачи
 }) => {
   const [taskText, setTaskText] = useState('');
   const [category, setCategory] = useState(null);
@@ -19,6 +20,18 @@ export const AddTaskModal = ({
   const [dragY, setDragY] = useState(0);
   
   const modalRef = useRef(null);
+  
+  // Устанавливаем дедлайн на выбранную дату при открытии модального окна
+  useEffect(() => {
+    if (isOpen && selectedDate) {
+      // Форматируем дату для input type="datetime-local" (YYYY-MM-DDTHH:MM)
+      const date = new Date(selectedDate);
+      // Устанавливаем время на конец дня (23:59)
+      date.setHours(23, 59, 0, 0);
+      const formattedDate = date.toISOString().slice(0, 16);
+      setDeadline(formattedDate);
+    }
+  }, [isOpen, selectedDate]);
   
   // Блокируем скролл страницы при открытии модального окна
   useEffect(() => {
