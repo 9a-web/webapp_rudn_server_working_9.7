@@ -187,8 +187,40 @@ export const TasksSection = ({ userSettings, selectedDate, weekNumber, onModalSt
     try {
       hapticFeedback && hapticFeedback('impact', 'light');
       const task = tasks.find(t => t.id === taskId);
+      const wasCompleted = task.completed;
       const updatedTask = await tasksAPI.updateTask(taskId, { completed: !task.completed });
-      setTasks(tasks.map(t => t.id === taskId ? updatedTask : t));
+      const updatedTasks = tasks.map(t => t.id === taskId ? updatedTask : t);
+      setTasks(updatedTasks);
+      
+      // Проверяем, завершены ли все задачи на выбранную дату
+      if (!wasCompleted && updatedTask.completed) {
+        // Получаем задачи для выбранной даты
+        const selectedDateStr = tasksSelectedDate.toISOString().split('T')[0];
+        const tasksForDate = updatedTasks.filter(t => {
+          if (t.created_at) {
+            const taskCreatedDate = new Date(t.created_at).toISOString().split('T')[0];
+            if (taskCreatedDate === selectedDateStr) return true;
+          }
+          if (t.deadline) {
+            const taskDeadlineDate = new Date(t.deadline).toISOString().split('T')[0];
+            if (taskDeadlineDate === selectedDateStr) return true;
+          }
+          return false;
+        });
+        
+        // Если задач больше 2 и все выполнены - запускаем конфетти
+        if (tasksForDate.length > 2) {
+          const allCompleted = tasksForDate.every(t => t.completed);
+          if (allCompleted) {
+            // Сильная вибрация для успеха
+            hapticFeedback && hapticFeedback('notification', 'success');
+            // Запускаем конфетти с небольшой задержкой
+            setTimeout(() => {
+              tasksCompleteConfetti();
+            }, 300);
+          }
+        }
+      }
     } catch (error) {
       console.error('Error toggling task:', error);
     }
