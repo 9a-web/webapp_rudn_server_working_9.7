@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Home, ClipboardList, FileCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 
-export const BottomNavigation = ({ activeTab = 'home', onTabChange, hapticFeedback, isHidden = false }) => {
+export const BottomNavigation = React.memo(({ activeTab = 'home', onTabChange, hapticFeedback, isHidden = false }) => {
   const { t } = useTranslation();
 
   const tabs = [
