@@ -57,11 +57,19 @@ const Home = () => {
   const [userStats, setUserStats] = useState(null);
   const [newAchievement, setNewAchievement] = useState(null); // Для показа уведомления
 
-  // Состояние для нижнего меню навигации
-  const [activeTab, setActiveTab] = useState('home');
+  // Состояние для нижнего меню навигации (загружаем из localStorage)
+  const [activeTab, setActiveTab] = useState(() => {
+    const savedTab = localStorage.getItem('activeTab');
+    return savedTab || 'home';
+  });
   
   // Состояние для отслеживания модальных окон (скрывать нижнее меню)
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Сохраняем activeTab в localStorage при изменении
+  useEffect(() => {
+    localStorage.setItem('activeTab', activeTab);
+  }, [activeTab]);
 
   // Загрузка данных пользователя при монтировании
   useEffect(() => {
