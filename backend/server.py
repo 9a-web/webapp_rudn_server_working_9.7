@@ -527,6 +527,7 @@ async def get_weather_endpoint():
 # ============ Эндпоинты для информации о боте ============
 
 @api_router.get("/bot-info", response_model=BotInfo)
+@cache(ttl=3600)  # Кешируем на 1 час
 async def get_bot_info():
     """Получить информацию о боте (username, id и т.д.)"""
     try:
