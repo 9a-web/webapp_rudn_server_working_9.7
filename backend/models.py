@@ -398,6 +398,7 @@ class GroupTask(BaseModel):
     category: Optional[str] = None
     priority: str = 'medium'  # 'low', 'medium', 'high'
     owner_id: int  # telegram_id владельца
+    room_id: Optional[str] = None  # ID комнаты, к которой привязана задача
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     status: str = 'created'  # 'created', 'in_progress', 'completed', 'overdue'
