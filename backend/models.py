@@ -312,7 +312,8 @@ class Task(BaseModel):
     # Новые поля
     category: Optional[str] = None  # Категория: 'study', 'personal', 'sport', 'project'
     priority: Optional[str] = 'medium'  # Приоритет: 'low', 'medium', 'high'
-    deadline: Optional[datetime] = None  # Дедлайн задачи
+    deadline: Optional[datetime] = None  # Дедлайн задачи (для реальных сроков)
+    target_date: Optional[datetime] = None  # Целевая дата задачи (день, к которому привязана задача)
     subject: Optional[str] = None  # Привязка к предмету из расписания
     discipline_id: Optional[str] = None  # ID дисциплины (для интеграции с расписанием)
     order: int = 0  # Порядок задачи для drag & drop (меньше = выше в списке)
