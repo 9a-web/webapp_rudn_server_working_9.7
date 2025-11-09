@@ -1309,6 +1309,466 @@ async def get_group_task_comments(task_id: str):
         
         comments = []
         async for comment_doc in comments_cursor:
+
+
+
+# ============ API endpoints для комнат (Rooms) ============
+
+@api_router.post("/rooms", response_model=RoomResponse)
+async def create_room(room_data: RoomCreate):
+    """Создать новую комнату"""
+    try:
+        # Создаем участника-владельца
+        owner_participant = RoomParticipant(
+            telegram_id=room_data.telegram_id,
+            first_name="Owner",  # будет обновлено при первом обращении
+            role='owner'
+        )
+        
+        room = Room(
+            name=room_data.name,
+            description=room_data.description,
+            owner_id=room_data.telegram_id,
+            color=room_data.color,
+            participants=[owner_participant]
+        )
+        
+        await db.rooms.insert_one(room.model_dump())
+        
+        return RoomResponse(
+            **room.model_dump(),
+            total_participants=len(room.participants),
+            total_tasks=0,
+            completed_tasks=0,
+            completion_percentage=0
+        )
+    except Exception as e:
+        logger.error(f"Ошибка при создании комнаты: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/rooms/{telegram_id}", response_model=List[RoomResponse])
+async def get_user_rooms(telegram_id: int):
+    """Получить все комнаты пользователя"""
+    try:
+        # Находим комнаты, где пользователь является участником
+        rooms_cursor = db.rooms.find({
+            "participants.telegram_id": telegram_id
+        })
+        
+        rooms = []
+        async for room_doc in rooms_cursor:
+            # Подсчитываем задачи в комнате
+            total_tasks = await db.group_tasks.count_documents({"room_id": room_doc["room_id"]})
+            completed_tasks = await db.group_tasks.count_documents({
+                "room_id": room_doc["room_id"],
+                "status": "completed"
+            })
+            
+            completion_percentage = 0
+            if total_tasks > 0:
+                completion_percentage = int((completed_tasks / total_tasks) * 100)
+            
+            rooms.append(RoomResponse(
+                **room_doc,
+                total_participants=len(room_doc.get("participants", [])),
+                total_tasks=total_tasks,
+                completed_tasks=completed_tasks,
+                completion_percentage=completion_percentage
+            ))
+        
+        return rooms
+    except Exception as e:
+        logger.error(f"Ошибка при получении комнат: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/rooms/detail/{room_id}", response_model=RoomResponse)
+async def get_room_detail(room_id: str):
+    """Получить детальную информацию о комнате"""
+    try:
+        room_doc = await db.rooms.find_one({"room_id": room_id})
+        
+        if not room_doc:
+            raise HTTPException(status_code=404, detail="Комната не найдена")
+        
+        # Подсчитываем задачи
+        total_tasks = await db.group_tasks.count_documents({"room_id": room_id})
+        completed_tasks = await db.group_tasks.count_documents({
+            "room_id": room_id,
+            "status": "completed"
+        })
+        
+        completion_percentage = 0
+        if total_tasks > 0:
+            completion_percentage = int((completed_tasks / total_tasks) * 100)
+        
+        return RoomResponse(
+            **room_doc,
+            total_participants=len(room_doc.get("participants", [])),
+            total_tasks=total_tasks,
+            completed_tasks=completed_tasks,
+            completion_percentage=completion_percentage
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Ошибка при получении деталей комнаты: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/rooms/{room_id}/invite-link", response_model=RoomInviteLinkResponse)
+async def generate_room_invite_link(room_id: str, telegram_id: int = Body(..., embed=True)):
+    """Сгенерировать ссылку-приглашение в комнату"""
+    try:
+        # Проверяем существование комнаты
+        room_doc = await db.rooms.find_one({"room_id": room_id})
+        
+        if not room_doc:
+            raise HTTPException(status_code=404, detail="Комната не найдена")
+        
+        # Проверяем, что пользователь является участником комнаты
+        is_participant = any(p["telegram_id"] == telegram_id for p in room_doc.get("participants", []))
+        if not is_participant:
+            raise HTTPException(status_code=403, detail="Вы не являетесь участником комнаты")
+        
+        # Получаем информацию о боте
+        from telegram import Bot
+        
+        bot_token = os.environ.get('TELEGRAM_BOT_TOKEN')
+        if not bot_token:
+            raise HTTPException(status_code=500, detail="Bot token не настроен")
+        
+        bot = Bot(token=bot_token)
+        bot_info = await bot.get_me()
+        bot_username = bot_info.username
+        
+        # Формируем ссылку с реферальным кодом
+        invite_token = room_doc.get("invite_token")
+        invite_link = f"https://t.me/{bot_username}?start=room_{invite_token}_ref_{telegram_id}"
+        
+        return RoomInviteLinkResponse(
+            invite_link=invite_link,
+            invite_token=invite_token,
+            room_id=room_id,
+            bot_username=bot_username
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Ошибка при генерации ссылки: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/rooms/join/{invite_token}", response_model=RoomResponse)
+async def join_room_by_token(invite_token: str, join_data: RoomJoinRequest):
+    """Присоединиться к комнате по токену приглашения"""
+    try:
+        # Находим комнату по токену
+        room_doc = await db.rooms.find_one({"invite_token": invite_token})
+        
+        if not room_doc:
+            raise HTTPException(status_code=404, detail="Комната не найдена")
+        
+        # Проверяем, не является ли пользователь уже участником
+        is_already_participant = any(
+            p["telegram_id"] == join_data.telegram_id 
+            for p in room_doc.get("participants", [])
+        )
+        
+        if is_already_participant:
+            # Возвращаем информацию о комнате
+            total_tasks = await db.group_tasks.count_documents({"room_id": room_doc["room_id"]})
+            completed_tasks = await db.group_tasks.count_documents({
+                "room_id": room_doc["room_id"],
+                "status": "completed"
+            })
+            
+            completion_percentage = 0
+            if total_tasks > 0:
+                completion_percentage = int((completed_tasks / total_tasks) * 100)
+            
+            return RoomResponse(
+                **room_doc,
+                total_participants=len(room_doc.get("participants", [])),
+                total_tasks=total_tasks,
+                completed_tasks=completed_tasks,
+                completion_percentage=completion_percentage
+            )
+        
+        # Добавляем нового участника
+        new_participant = RoomParticipant(
+            telegram_id=join_data.telegram_id,
+            username=join_data.username,
+            first_name=join_data.first_name,
+            role='member',
+            referral_code=join_data.referral_code
+        )
+        
+        await db.rooms.update_one(
+            {"invite_token": invite_token},
+            {
+                "$push": {"participants": new_participant.model_dump()},
+                "$set": {"updated_at": datetime.utcnow()}
+            }
+        )
+        
+        # Автоматически добавляем пользователя во все групповые задачи комнаты
+        tasks_cursor = db.group_tasks.find({"room_id": room_doc["room_id"]})
+        async for task_doc in tasks_cursor:
+            # Проверяем, не является ли уже участником задачи
+            is_task_participant = any(
+                p["telegram_id"] == join_data.telegram_id 
+                for p in task_doc.get("participants", [])
+            )
+            
+            if not is_task_participant:
+                task_participant = GroupTaskParticipant(
+                    telegram_id=join_data.telegram_id,
+                    username=join_data.username,
+                    first_name=join_data.first_name,
+                    role='member'
+                )
+                
+                await db.group_tasks.update_one(
+                    {"task_id": task_doc["task_id"]},
+                    {
+                        "$push": {"participants": task_participant.model_dump()},
+                        "$set": {"updated_at": datetime.utcnow()}
+                    }
+                )
+        
+        # Получаем обновленную комнату
+        updated_room = await db.rooms.find_one({"invite_token": invite_token})
+        
+        total_tasks = await db.group_tasks.count_documents({"room_id": updated_room["room_id"]})
+        completed_tasks = await db.group_tasks.count_documents({
+            "room_id": updated_room["room_id"],
+            "status": "completed"
+        })
+        
+        completion_percentage = 0
+        if total_tasks > 0:
+            completion_percentage = int((completed_tasks / total_tasks) * 100)
+        
+        return RoomResponse(
+            **updated_room,
+            total_participants=len(updated_room.get("participants", [])),
+            total_tasks=total_tasks,
+            completed_tasks=completed_tasks,
+            completion_percentage=completion_percentage
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Ошибка при присоединении к комнате: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/rooms/{room_id}/tasks", response_model=GroupTaskResponse)
+async def create_task_in_room(room_id: str, task_data: RoomTaskCreate):
+    """Создать групповую задачу в комнате"""
+    try:
+        # Проверяем существование комнаты
+        room_doc = await db.rooms.find_one({"room_id": room_id})
+        
+        if not room_doc:
+            raise HTTPException(status_code=404, detail="Комната не найдена")
+        
+        # Проверяем, что пользователь является участником комнаты
+        is_participant = any(p["telegram_id"] == task_data.telegram_id for p in room_doc.get("participants", []))
+        if not is_participant:
+            raise HTTPException(status_code=403, detail="Вы не являетесь участником комнаты")
+        
+        # Создаем владельца задачи
+        creator_info = next(
+            (p for p in room_doc.get("participants", []) if p["telegram_id"] == task_data.telegram_id),
+            None
+        )
+        
+        owner_participant = GroupTaskParticipant(
+            telegram_id=task_data.telegram_id,
+            username=creator_info.get("username") if creator_info else None,
+            first_name=creator_info.get("first_name", "User") if creator_info else "User",
+            role='owner'
+        )
+        
+        # Автоматически добавляем всех участников комнаты как участников задачи
+        participants = [owner_participant]
+        for room_participant in room_doc.get("participants", []):
+            if room_participant["telegram_id"] != task_data.telegram_id:
+                task_participant = GroupTaskParticipant(
+                    telegram_id=room_participant["telegram_id"],
+                    username=room_participant.get("username"),
+                    first_name=room_participant.get("first_name", "User"),
+                    role='member'
+                )
+                participants.append(task_participant)
+        
+        # Создаем групповую задачу
+        group_task = GroupTask(
+            title=task_data.title,
+            description=task_data.description,
+            deadline=task_data.deadline,
+            category=task_data.category,
+            priority=task_data.priority,
+            owner_id=task_data.telegram_id,
+            room_id=room_id,
+            participants=participants
+        )
+        
+        await db.group_tasks.insert_one(group_task.model_dump())
+        
+        # Подсчитываем процент выполнения
+        total_participants = len(group_task.participants)
+        completed_participants = sum(1 for p in group_task.participants if p.completed)
+        completion_percentage = 0
+        if total_participants > 0:
+            completion_percentage = int((completed_participants / total_participants) * 100)
+        
+        return GroupTaskResponse(
+            **group_task.model_dump(),
+            completion_percentage=completion_percentage,
+            total_participants=total_participants,
+            completed_participants=completed_participants
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Ошибка при создании задачи в комнате: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.delete("/rooms/{room_id}/leave", response_model=SuccessResponse)
+async def leave_room(room_id: str, telegram_id: int = Body(..., embed=True)):
+    """Покинуть комнату"""
+    try:
+        room_doc = await db.rooms.find_one({"room_id": room_id})
+        
+        if not room_doc:
+            raise HTTPException(status_code=404, detail="Комната не найдена")
+        
+        # Проверяем, что пользователь не является владельцем
+        if room_doc.get("owner_id") == telegram_id:
+            raise HTTPException(
+                status_code=403, 
+                detail="Владелец не может покинуть комнату. Удалите комнату или передайте права владельца."
+            )
+        
+        # Удаляем участника из комнаты
+        await db.rooms.update_one(
+            {"room_id": room_id},
+            {
+                "$pull": {"participants": {"telegram_id": telegram_id}},
+                "$set": {"updated_at": datetime.utcnow()}
+            }
+        )
+        
+        # Удаляем участника из всех задач комнаты
+        await db.group_tasks.update_many(
+            {"room_id": room_id},
+            {
+                "$pull": {"participants": {"telegram_id": telegram_id}},
+                "$set": {"updated_at": datetime.utcnow()}
+            }
+        )
+        
+        return SuccessResponse(success=True, message="Вы успешно покинули комнату")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Ошибка при выходе из комнаты: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.delete("/rooms/{room_id}", response_model=SuccessResponse)
+async def delete_room(room_id: str, telegram_id: int = Body(..., embed=True)):
+    """Удалить комнату (только владелец)"""
+    try:
+        room_doc = await db.rooms.find_one({"room_id": room_id})
+        
+        if not room_doc:
+            raise HTTPException(status_code=404, detail="Комната не найдена")
+        
+        # Проверяем, что пользователь является владельцем
+        if room_doc.get("owner_id") != telegram_id:
+            raise HTTPException(status_code=403, detail="Только владелец может удалить комнату")
+        
+        # Удаляем все задачи комнаты
+        await db.group_tasks.delete_many({"room_id": room_id})
+        
+        # Удаляем комментарии к задачам комнаты
+        tasks_to_delete = await db.group_tasks.find({"room_id": room_id}).to_list(length=None)
+        task_ids = [task["task_id"] for task in tasks_to_delete]
+        if task_ids:
+            await db.group_task_comments.delete_many({"task_id": {"$in": task_ids}})
+        
+        # Удаляем комнату
+        await db.rooms.delete_one({"room_id": room_id})
+        
+        return SuccessResponse(success=True, message="Комната успешно удалена")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Ошибка при удалении комнаты: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/rooms/{room_id}/tasks", response_model=List[GroupTaskResponse])
+async def get_room_tasks(room_id: str):
+    """Получить все задачи комнаты"""
+    try:
+        # Проверяем существование комнаты
+        room_doc = await db.rooms.find_one({"room_id": room_id})
+        
+        if not room_doc:
+            raise HTTPException(status_code=404, detail="Комната не найдена")
+        
+        # Получаем все задачи комнаты
+        tasks_cursor = db.group_tasks.find({"room_id": room_id}).sort("created_at", -1)
+        
+        tasks = []
+        async for task_doc in tasks_cursor:
+            # Обновляем статус задачи если нужно
+            if task_doc.get("deadline") and task_doc.get("status") != "completed":
+                if datetime.utcnow() > task_doc["deadline"]:
+                    await db.group_tasks.update_one(
+                        {"task_id": task_doc["task_id"]},
+                        {"$set": {"status": "overdue"}}
+                    )
+                    task_doc["status"] = "overdue"
+            
+            # Проверяем завершенность задачи
+            participants = task_doc.get("participants", [])
+            if participants:
+                all_completed = all(p.get("completed", False) for p in participants)
+                if all_completed and task_doc.get("status") != "completed":
+                    await db.group_tasks.update_one(
+                        {"task_id": task_doc["task_id"]},
+                        {"$set": {"status": "completed"}}
+                    )
+                    task_doc["status"] = "completed"
+            
+            total_participants = len(participants)
+            completed_participants = sum(1 for p in participants if p.get("completed", False))
+            completion_percentage = 0
+            if total_participants > 0:
+                completion_percentage = int((completed_participants / total_participants) * 100)
+            
+            tasks.append(GroupTaskResponse(
+                **task_doc,
+                completion_percentage=completion_percentage,
+                total_participants=total_participants,
+                completed_participants=completed_participants
+            ))
+        
+        return tasks
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Ошибка при получении задач комнаты: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
             comments.append(GroupTaskCommentResponse(**comment_doc))
         
         return comments
