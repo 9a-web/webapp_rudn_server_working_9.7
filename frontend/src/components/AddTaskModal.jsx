@@ -87,6 +87,8 @@ export const AddTaskModal = ({
         category: category,
         priority: priority,
         deadline: deadline ? new Date(deadline).toISOString() : null,
+        // target_date - дата, к которой привязана задача (всегда устанавливаем, если selectedDate передан)
+        target_date: selectedDate ? new Date(selectedDate).toISOString() : null,
         subject: subject || null,
       };
       
