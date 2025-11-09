@@ -11,6 +11,10 @@ import { tasksCompleteConfetti } from '../utils/confetti';
 import { GroupTaskCard } from './GroupTaskCard';
 import { CreateGroupTaskModal } from './CreateGroupTaskModal';
 import { GroupTaskDetailModal } from './GroupTaskDetailModal';
+import RoomCard from './RoomCard';
+import CreateRoomModal from './CreateRoomModal';
+import RoomDetailModal from './RoomDetailModal';
+import * as roomsAPI from '../services/roomsAPI';
 
 export const TasksSection = ({ userSettings, selectedDate, weekNumber, onModalStateChange }) => {
   const { user, hapticFeedback } = useTelegram();
