@@ -499,6 +499,7 @@ export const TasksSection = ({ userSettings, selectedDate, weekNumber, onModalSt
   
   // Обработчик выбора даты
   const handleDateSelect = (date) => {
+    console.log('📆 Date selected in WeekDateSelector:', date.toISOString());
     setTasksSelectedDate(date);
   };
   
