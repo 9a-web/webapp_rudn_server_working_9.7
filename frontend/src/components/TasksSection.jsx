@@ -905,17 +905,32 @@ const TodayTaskItem = ({
                 })()}
               </div>
               
-              {/* Кнопка удаления (всегда видна) */}
-              <button
-                onClick={() => {
-                  hapticFeedback && hapticFeedback('impact', 'medium');
-                  onDelete(task.id);
-                }}
-                className="flex-shrink-0 p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors mt-0.5"
-                title="Удалить задачу"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
+              {/* Кнопки действий */}
+              <div className="flex items-center gap-1 flex-shrink-0">
+                {/* Кнопка редактирования */}
+                <button
+                  onClick={() => {
+                    hapticFeedback && hapticFeedback('impact', 'light');
+                    onEdit && onEdit(task);
+                  }}
+                  className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                  title="Редактировать задачу"
+                >
+                  <Edit2 className="w-3.5 h-3.5" />
+                </button>
+                
+                {/* Кнопка удаления */}
+                <button
+                  onClick={() => {
+                    hapticFeedback && hapticFeedback('impact', 'medium');
+                    onDelete(task.id);
+                  }}
+                  className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                  title="Удалить задачу"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           </div>
         )}
