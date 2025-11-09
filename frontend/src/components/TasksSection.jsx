@@ -123,6 +123,43 @@ export const TasksSection = ({ userSettings, selectedDate, weekNumber, onModalSt
     }
   };
 
+  const loadRooms = async () => {
+    try {
+      const userRooms = await roomsAPI.getUserRooms(userSettings.telegram_id);
+      setRooms(userRooms || []);
+    } catch (error) {
+      console.error('Error loading rooms:', error);
+    }
+  };
+
+  const handleCreateRoom = async (roomData) => {
+    try {
+      const newRoom = await roomsAPI.createRoom({
+        ...roomData,
+        telegram_id: userSettings.telegram_id,
+        color: 'blue'
+      });
+      setRooms(prev => [...prev, newRoom]);
+      setIsCreateRoomModalOpen(false);
+      hapticFeedback && hapticFeedback('notification', 'success');
+    } catch (error) {
+      console.error('Error creating room:', error);
+      hapticFeedback && hapticFeedback('notification', 'error');
+    }
+  };
+
+  const handleRoomClick = (room) => {
+    setSelectedRoom(room);
+    setIsRoomDetailModalOpen(true);
+    hapticFeedback && hapticFeedback('impact', 'light');
+  };
+
+  const handleRoomDeleted = (roomId) => {
+    setRooms(prev => prev.filter(r => r.room_id !== roomId));
+    setIsRoomDetailModalOpen(false);
+    setSelectedRoom(null);
+  };
+
   // Обновление порядка задач после перетаскивания в карточке "Сегодня"
   const handleReorderTasks = async (newOrder) => {
     console.log('🔄 Reorder triggered!', {
