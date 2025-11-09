@@ -671,6 +671,8 @@ async def get_user_tasks(telegram_id: int):
 async def create_task(task_data: TaskCreate):
     """Создать новую задачу"""
     try:
+        logger.info(f"📝 Creating task with target_date: {task_data.target_date}, deadline: {task_data.deadline}")
+        
         # Получаем максимальный order для данного пользователя
         max_order_task = await db.tasks.find_one(
             {"telegram_id": task_data.telegram_id},
@@ -683,7 +685,11 @@ async def create_task(task_data: TaskCreate):
         task = Task(**task_data.dict(), order=next_order)
         task_dict = task.dict()
         
+        logger.info(f"💾 Saving task to DB: target_date={task_dict.get('target_date')}, deadline={task_dict.get('deadline')}")
+        
         await db.tasks.insert_one(task_dict)
+        
+        logger.info(f"✅ Task created successfully: id={task_dict['id']}")
         
         return TaskResponse(**task_dict)
     except Exception as e:
