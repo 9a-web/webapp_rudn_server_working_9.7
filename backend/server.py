@@ -1309,6 +1309,12 @@ async def get_group_task_comments(task_id: str):
         
         comments = []
         async for comment_doc in comments_cursor:
+            comments.append(GroupTaskCommentResponse(**comment_doc))
+        
+        return comments
+    except Exception as e:
+        logger.error(f"Ошибка при получении комментариев: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 
