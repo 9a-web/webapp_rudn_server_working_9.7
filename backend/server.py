@@ -48,7 +48,18 @@ from models import (
     TaskUpdate,
     TaskResponse,
     TaskReorderItem,
-    TaskReorderRequest
+    TaskReorderRequest,
+    GroupTask,
+    GroupTaskCreate,
+    GroupTaskResponse,
+    GroupTaskParticipant,
+    GroupTaskComment,
+    GroupTaskCommentCreate,
+    GroupTaskCommentResponse,
+    GroupTaskInvite,
+    GroupTaskInviteCreate,
+    GroupTaskInviteResponse,
+    GroupTaskCompleteRequest
 )
 from notifications import get_notification_service
 from scheduler import get_scheduler
