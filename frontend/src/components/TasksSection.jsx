@@ -774,6 +774,7 @@ const TodayTaskItem = ({
   editingText, 
   setEditingText,
   onToggle,
+  onEdit,
   onSaveEdit,
   onCancelEdit,
   onDelete,
