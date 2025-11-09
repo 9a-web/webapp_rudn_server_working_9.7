@@ -206,13 +206,20 @@ export const TasksSection = ({ userSettings, selectedDate, weekNumber, onModalSt
         // Получаем задачи для выбранной даты
         const selectedDateStr = tasksSelectedDate.toISOString().split('T')[0];
         const tasksForDate = updatedTasks.filter(t => {
-          if (t.created_at) {
-            const taskCreatedDate = new Date(t.created_at).toISOString().split('T')[0];
-            if (taskCreatedDate === selectedDateStr) return true;
+          // Проверяем target_date (приоритет)
+          if (t.target_date) {
+            const targetDateStr = new Date(t.target_date).toISOString().split('T')[0];
+            if (targetDateStr === selectedDateStr) return true;
           }
+          // Проверяем deadline
           if (t.deadline) {
             const taskDeadlineDate = new Date(t.deadline).toISOString().split('T')[0];
             if (taskDeadlineDate === selectedDateStr) return true;
+          }
+          // Задачи без target_date и deadline показываем только на сегодня
+          if (!t.target_date && !t.deadline) {
+            const todayStr = new Date().toISOString().split('T')[0];
+            if (selectedDateStr === todayStr) return true;
           }
           return false;
         });
