@@ -646,6 +646,30 @@ frontend:
           agent: "main"
           comment: "✅ СКРЫТИЕ НИЖНЕГО МЕНЮ ПРИ ОТКРЫТИИ МОДАЛЬНЫХ ОКОН: Реализовано автоматическое скрытие BottomNavigation при открытии любых модальных окон, за исключением ProfileModal. ИЗМЕНЕНИЯ: 1) App.js - Добавлено централизованное управление состояниями модальных окон: isAddTaskModalOpen (из TasksSection), isMenuOpen (из Header), isShareModalOpen (из LiveScheduleSection). Создана вычисляемая переменная isAnyModalOpen, которая объединяет состояния 7 модальных окон: CalendarModal, AnalyticsModal, AchievementsModal, NotificationSettings, MenuModal, ShareScheduleModal, AddTaskModal. BottomNavigation получает проп isHidden={isAnyModalOpen}. Добавлены коллбеки: onMenuStateChange для Header, onShareModalStateChange для LiveScheduleSection, onModalStateChange для TasksSection. 2) Header.jsx - Добавлен новый проп onMenuStateChange. Реализован useEffect для уведомления родительского компонента о состоянии MenuModal через onMenuStateChange(isMenuOpen). 3) LiveScheduleSection.jsx - Добавлен новый проп onShareModalStateChange. Реализован useEffect для уведомления родительского компонента о состоянии ShareScheduleModal через onShareModalStateChange(isShareModalOpen). АРХИТЕКТУРА: Централизованное управление в App.js, двунаправленная связь через коллбеки, реактивное обновление видимости нижнего меню. МОДАЛЬНЫЕ ОКНА, СКРЫВАЮЩИЕ МЕНЮ: CalendarModal, AnalyticsModal, AchievementsModal, NotificationSettings, MenuModal, ShareScheduleModal, AddTaskModal (7 модальных окон). ИСКЛЮЧЕНИЕ: ProfileModal НЕ скрывает нижнее меню по требованию задачи. РЕЗУЛЬТАТ: Улучшенный UX - модальные окна получают полное внимание без отвлекающих элементов, консистентное поведение для всех модальных окон. Frontend скомпилирован успешно без ошибок. Создана документация BOTTOM_MENU_MODAL_HIDE.md с полным описанием архитектуры и сценариями тестирования."
 
+  - task: "Rooms Feature - Backend Implementation"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/models.py, /app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ BACKEND ДЛЯ КОМНАТ РЕАЛИЗОВАН: Созданы модели данных: Room, RoomParticipant, RoomCreate, RoomResponse, RoomInviteLinkResponse, RoomJoinRequest, RoomTaskCreate. Обновлена модель GroupTask с полем room_id для связи задач с комнатами. Реализовано 9 API endpoints: POST /api/rooms (создание), GET /api/rooms/{telegram_id} (список комнат), GET /api/rooms/detail/{room_id} (детали), POST /api/rooms/{room_id}/invite-link (генерация ссылки), POST /api/rooms/join/{invite_token} (присоединение), POST /api/rooms/{room_id}/tasks (создание задачи), GET /api/rooms/{room_id}/tasks (задачи комнаты), DELETE /api/rooms/{room_id}/leave (выход), DELETE /api/rooms/{room_id} (удаление). Ключевые особенности: автодобавление участников комнаты во все задачи, подсчет прогресса (completed_tasks/total_tasks), генерация реферальных ссылок формата https://t.me/{bot_username}?start=room_{token}_ref_{user_id}, проверка прав доступа (owner/member), каскадное удаление при удалении комнаты. Backend успешно запущен без ошибок."
+
+  - task: "Rooms Feature - Frontend Implementation"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/RoomCard.jsx, /app/frontend/src/components/CreateRoomModal.jsx, /app/frontend/src/components/RoomDetailModal.jsx, /app/frontend/src/services/roomsAPI.js, /app/frontend/src/components/TasksSection.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ FRONTEND ДЛЯ КОМНАТ РЕАЛИЗОВАН: Создан API service roomsAPI.js с 9 методами для работы с комнатами. Реализованы компоненты: 1) RoomCard - карточка комнаты 160x200px с синим градиентом, круговым прогрессом, счетчиками участников и задач. 2) CreateRoomModal - адаптивное модальное окно создания комнаты с валидацией (название до 50 символов, описание до 200). 3) RoomDetailModal - детальный просмотр комнаты со списком задач, кнопками 'Пригласить/Удалить/Выйти', быстрым добавлением задач, генерацией и копированием ссылки-приглашения. Интеграция в TasksSection: секция 'Комнаты' после карточки 'Сегодня', горизонтальный скролл карточек, кнопка '+ Создать комнату', автозагрузка комнат, управление состоянием модальных окон. Дизайн: синий градиент (#4F46E5 → #7C3AED), иконка Users, анимации Framer Motion, адаптивность для мобильных/десктоп, haptic feedback. Frontend успешно скомпилирован. Создана документация ROOMS_IMPLEMENTATION.md."
+
 
 
 
