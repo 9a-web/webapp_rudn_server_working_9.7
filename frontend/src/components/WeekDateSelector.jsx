@@ -183,7 +183,7 @@ export const WeekDateSelector = ({
                         fill="none"
                       />
                       {/* Прогресс круг */}
-                      <circle
+                      <motion.circle
                         cx="20"
                         cy="20"
                         r="16"
@@ -191,10 +191,14 @@ export const WeekDateSelector = ({
                         strokeWidth="2.5"
                         fill="none"
                         strokeLinecap="round"
-                        strokeDasharray={`${2 * Math.PI * 16}`}
-                        strokeDashoffset={`${2 * Math.PI * 16 * (1 - completion / 100)}`}
-                        style={{
-                          transition: 'stroke-dashoffset 0.5s ease'
+                        strokeDasharray={2 * Math.PI * 16}
+                        initial={{ strokeDashoffset: 2 * Math.PI * 16 }}
+                        animate={{ 
+                          strokeDashoffset: 2 * Math.PI * 16 * (1 - completion / 100)
+                        }}
+                        transition={{ 
+                          duration: 0.5, 
+                          ease: 'easeInOut' 
                         }}
                       />
                     </svg>
