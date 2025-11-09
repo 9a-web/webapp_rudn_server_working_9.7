@@ -75,7 +75,7 @@ def test_reorder_endpoint():
             print(f"  order {item['order']}: {task_text}")
         
         # 4. Отправляем запрос на изменение порядка
-        response = requests.put(f"{BASE_URL}/tasks/reorder", json=task_orders)
+        response = requests.put(f"{BASE_URL}/tasks/reorder", json={"tasks": task_orders})
         
         if response.status_code == 200:
             result = response.json()
