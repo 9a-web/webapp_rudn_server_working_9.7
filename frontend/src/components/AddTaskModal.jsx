@@ -36,21 +36,13 @@ export const AddTaskModal = ({
   // Автоматически устанавливаем дедлайн на выбранную дату при открытии модального окна
   useEffect(() => {
     if (isOpen && selectedDate) {
-      // Проверяем, не сегодняшняя ли это дата
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const selected = new Date(selectedDate);
-      selected.setHours(0, 0, 0, 0);
+      // ВСЕГДА устанавливаем дедлайн на выбранную дату (включая прошедшие и будущие)
+      const deadlineDate = new Date(selectedDate);
+      deadlineDate.setHours(23, 59, 0, 0);
       
-      // Если выбрана НЕ сегодняшняя дата - автоматически устанавливаем дедлайн на 23:59 выбранного дня
-      if (selected.getTime() !== today.getTime()) {
-        const deadlineDate = new Date(selectedDate);
-        deadlineDate.setHours(23, 59, 0, 0);
-        
-        // Форматируем для datetime-local input (YYYY-MM-DDTHH:mm)
-        const formattedDeadline = deadlineDate.toISOString().slice(0, 16);
-        setDeadline(formattedDeadline);
-      }
+      // Форматируем для datetime-local input (YYYY-MM-DDTHH:mm)
+      const formattedDeadline = deadlineDate.toISOString().slice(0, 16);
+      setDeadline(formattedDeadline);
     }
   }, [isOpen, selectedDate]);
   
