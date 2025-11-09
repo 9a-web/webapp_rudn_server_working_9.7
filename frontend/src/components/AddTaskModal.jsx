@@ -91,12 +91,15 @@ export const AddTaskModal = ({
       hapticFeedback && hapticFeedback('impact', 'medium');
       
       // Создаем объект задачи с дополнительными полями
-      // Для target_date используем дату без времени (полночь UTC)
+      // Для target_date форматируем дату без конвертации в UTC
       let targetDateISO = null;
       if (selectedDate) {
         const targetDate = new Date(selectedDate);
-        targetDate.setHours(0, 0, 0, 0);
-        targetDateISO = targetDate.toISOString();
+        // Форматируем дату в формате YYYY-MM-DD без времени
+        const year = targetDate.getFullYear();
+        const month = String(targetDate.getMonth() + 1).padStart(2, '0');
+        const day = String(targetDate.getDate()).padStart(2, '0');
+        targetDateISO = `${year}-${month}-${day}T00:00:00`;
       }
       
       const taskData = {
