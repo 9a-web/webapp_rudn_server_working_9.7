@@ -659,7 +659,8 @@ async def get_user_profile_photo_proxy(telegram_id: int):
 async def get_user_tasks(telegram_id: int):
     """Получить все задачи пользователя"""
     try:
-        tasks = await db.tasks.find({"telegram_id": telegram_id}).sort("created_at", -1).to_list(1000)
+        # Сортируем по order (порядок drag & drop), затем по created_at
+        tasks = await db.tasks.find({"telegram_id": telegram_id}).sort([("order", 1), ("created_at", -1)]).to_list(1000)
         return [TaskResponse(**task) for task in tasks]
     except Exception as e:
         logger.error(f"Ошибка при получении задач: {e}")
