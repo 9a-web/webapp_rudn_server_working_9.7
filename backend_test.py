@@ -1370,7 +1370,271 @@ class RUDNScheduleAPITester:
         except Exception as e:
             self.log_test("User Profile - GET /api/user-settings/{telegram_id}", False, f"Exception: {str(e)}")
             return False
-    
+
+    def test_tasks_api_comprehensive(self) -> bool:
+        """
+        Comprehensive test for Tasks API as requested:
+        1. Create a test user with telegram_id = 999777555
+        2. Create 3 test tasks for today's date
+        3. Mark 2 tasks as completed (completed: true)
+        4. Verify that the tasks are correctly saved with completed status
+        5. Get all tasks for the user and verify the completion status
+        """
+        try:
+            print("🔍 Testing Tasks API - Comprehensive Task Completion Test...")
+            
+            # Step 1: Create test user with telegram_id = 999777555
+            test_telegram_id = 999777555
+            
+            # First create user settings to ensure user exists
+            user_payload = {
+                "telegram_id": test_telegram_id,
+                "username": "tasks_test_user",
+                "first_name": "Задачи",
+                "last_name": "Тест",
+                "group_id": "tasks-test-group",
+                "group_name": "Группа для тестирования задач",
+                "facultet_id": "tasks-test-facultet",
+                "level_id": "tasks-test-level",
+                "kurs": "1",
+                "form_code": "д"
+            }
+            
+            user_response = self.session.post(
+                f"{self.base_url}/user-settings",
+                json=user_payload,
+                headers={"Content-Type": "application/json"}
+            )
+            
+            if user_response.status_code != 200:
+                self.log_test("Tasks API - Create Test User", False, 
+                            f"Failed to create test user: HTTP {user_response.status_code}: {user_response.text}")
+                return False
+            
+            self.log_test("Tasks API - Create Test User", True, 
+                        f"Successfully created test user with telegram_id {test_telegram_id}")
+            
+            # Step 2: Create 3 test tasks for today's date
+            from datetime import datetime, date
+            today = datetime.now().replace(hour=23, minute=59, second=59, microsecond=0)
+            
+            tasks_to_create = [
+                {
+                    "telegram_id": test_telegram_id,
+                    "text": "Подготовиться к экзамену по математике",
+                    "category": "study",
+                    "priority": "high",
+                    "target_date": today.isoformat()
+                },
+                {
+                    "telegram_id": test_telegram_id,
+                    "text": "Сдать лабораторную работу по физике",
+                    "category": "study", 
+                    "priority": "medium",
+                    "target_date": today.isoformat()
+                },
+                {
+                    "telegram_id": test_telegram_id,
+                    "text": "Купить учебники в библиотеке",
+                    "category": "personal",
+                    "priority": "low",
+                    "target_date": today.isoformat()
+                }
+            ]
+            
+            created_tasks = []
+            
+            for i, task_data in enumerate(tasks_to_create):
+                response = self.session.post(
+                    f"{self.base_url}/tasks",
+                    json=task_data,
+                    headers={"Content-Type": "application/json"}
+                )
+                
+                if response.status_code != 200:
+                    self.log_test("Tasks API - Create Tasks", False, 
+                                f"Failed to create task {i+1}: HTTP {response.status_code}: {response.text}")
+                    return False
+                
+                task = response.json()
+                created_tasks.append(task)
+                
+                # Validate task structure
+                required_fields = ['id', 'telegram_id', 'text', 'completed', 'created_at', 'updated_at']
+                for field in required_fields:
+                    if field not in task:
+                        self.log_test("Tasks API - Create Tasks", False, 
+                                    f"Task {i+1} missing required field: {field}")
+                        return False
+                
+                # Validate task data
+                if task['telegram_id'] != test_telegram_id:
+                    self.log_test("Tasks API - Create Tasks", False, 
+                                f"Task {i+1} telegram_id mismatch: expected {test_telegram_id}, got {task['telegram_id']}")
+                    return False
+                
+                if task['text'] != task_data['text']:
+                    self.log_test("Tasks API - Create Tasks", False, 
+                                f"Task {i+1} text mismatch: expected '{task_data['text']}', got '{task['text']}'")
+                    return False
+                
+                if task['completed'] != False:  # Should be False by default
+                    self.log_test("Tasks API - Create Tasks", False, 
+                                f"Task {i+1} should be incomplete by default, got completed={task['completed']}")
+                    return False
+            
+            self.log_test("Tasks API - Create 3 Tasks", True, 
+                        f"Successfully created 3 tasks for today's date",
+                        {
+                            "tasks_created": len(created_tasks),
+                            "task_ids": [task['id'] for task in created_tasks],
+                            "target_date": today.isoformat()
+                        })
+            
+            # Step 3: Mark 2 tasks as completed (first two tasks)
+            completed_tasks = []
+            
+            for i in range(2):  # Mark first 2 tasks as completed
+                task_id = created_tasks[i]['id']
+                update_payload = {"completed": True}
+                
+                response = self.session.put(
+                    f"{self.base_url}/tasks/{task_id}",
+                    json=update_payload,
+                    headers={"Content-Type": "application/json"}
+                )
+                
+                if response.status_code != 200:
+                    self.log_test("Tasks API - Mark Tasks Completed", False, 
+                                f"Failed to mark task {i+1} as completed: HTTP {response.status_code}: {response.text}")
+                    return False
+                
+                updated_task = response.json()
+                completed_tasks.append(updated_task)
+                
+                # Validate that task is marked as completed
+                if updated_task['completed'] != True:
+                    self.log_test("Tasks API - Mark Tasks Completed", False, 
+                                f"Task {i+1} not marked as completed: completed={updated_task['completed']}")
+                    return False
+                
+                # Validate that other fields remain unchanged
+                if updated_task['id'] != task_id:
+                    self.log_test("Tasks API - Mark Tasks Completed", False, 
+                                f"Task {i+1} ID changed after update")
+                    return False
+                
+                if updated_task['text'] != created_tasks[i]['text']:
+                    self.log_test("Tasks API - Mark Tasks Completed", False, 
+                                f"Task {i+1} text changed after update")
+                    return False
+            
+            self.log_test("Tasks API - Mark 2 Tasks Completed", True, 
+                        f"Successfully marked 2 tasks as completed",
+                        {
+                            "completed_task_ids": [task['id'] for task in completed_tasks],
+                            "completed_count": len(completed_tasks)
+                        })
+            
+            # Step 4: Verify that the tasks are correctly saved with completed status
+            # Get all tasks for the user and verify completion status
+            response = self.session.get(f"{self.base_url}/tasks/{test_telegram_id}")
+            
+            if response.status_code != 200:
+                self.log_test("Tasks API - Get All Tasks", False, 
+                            f"Failed to get tasks: HTTP {response.status_code}: {response.text}")
+                return False
+            
+            all_tasks = response.json()
+            
+            # Validate response structure
+            if not isinstance(all_tasks, list):
+                self.log_test("Tasks API - Get All Tasks", False, 
+                            "Response is not a list")
+                return False
+            
+            # Should have exactly 3 tasks
+            if len(all_tasks) != 3:
+                self.log_test("Tasks API - Get All Tasks", False, 
+                            f"Expected 3 tasks, got {len(all_tasks)}")
+                return False
+            
+            # Step 5: Verify completion status
+            completed_count = 0
+            incomplete_count = 0
+            
+            for task in all_tasks:
+                # Validate task structure
+                required_fields = ['id', 'telegram_id', 'text', 'completed', 'created_at', 'updated_at']
+                for field in required_fields:
+                    if field not in task:
+                        self.log_test("Tasks API - Verify Task Structure", False, 
+                                    f"Task missing required field: {field}")
+                        return False
+                
+                # Count completion status
+                if task['completed']:
+                    completed_count += 1
+                else:
+                    incomplete_count += 1
+                
+                # Validate telegram_id
+                if task['telegram_id'] != test_telegram_id:
+                    self.log_test("Tasks API - Verify Task Data", False, 
+                                f"Task telegram_id mismatch: expected {test_telegram_id}, got {task['telegram_id']}")
+                    return False
+            
+            # Verify completion counts
+            if completed_count != 2:
+                self.log_test("Tasks API - Verify Completion Status", False, 
+                            f"Expected 2 completed tasks, got {completed_count}")
+                return False
+            
+            if incomplete_count != 1:
+                self.log_test("Tasks API - Verify Completion Status", False, 
+                            f"Expected 1 incomplete task, got {incomplete_count}")
+                return False
+            
+            # Additional verification: Check specific task completion status
+            task_completion_status = {}
+            for task in all_tasks:
+                task_completion_status[task['id']] = task['completed']
+            
+            # Verify that the first 2 created tasks are completed
+            for i in range(2):
+                task_id = created_tasks[i]['id']
+                if not task_completion_status.get(task_id, False):
+                    self.log_test("Tasks API - Verify Specific Task Completion", False, 
+                                f"Task {i+1} (ID: {task_id}) should be completed but is not")
+                    return False
+            
+            # Verify that the 3rd task is not completed
+            third_task_id = created_tasks[2]['id']
+            if task_completion_status.get(third_task_id, True):
+                self.log_test("Tasks API - Verify Specific Task Completion", False, 
+                            f"Task 3 (ID: {third_task_id}) should be incomplete but is marked as completed")
+                return False
+            
+            # Final comprehensive validation
+            self.log_test("Tasks API - Comprehensive Task Completion Test", True, 
+                        "Successfully completed all task completion tests",
+                        {
+                            "test_telegram_id": test_telegram_id,
+                            "total_tasks_created": 3,
+                            "tasks_marked_completed": 2,
+                            "tasks_remaining_incomplete": 1,
+                            "completed_task_ids": [task['id'] for task in completed_tasks],
+                            "incomplete_task_id": created_tasks[2]['id'],
+                            "all_tasks_retrieved": len(all_tasks),
+                            "completion_verification": "PASSED"
+                        })
+            
+            return True
+            
+        except Exception as e:
+            self.log_test("Tasks API - Comprehensive Task Completion Test", False, f"Exception: {str(e)}")
+            return False
+
     def run_all_tests(self):
         """Run all API tests in sequence"""
         print("🚀 Starting RUDN Schedule API Backend Tests")
