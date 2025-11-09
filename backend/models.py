@@ -356,6 +356,7 @@ class TaskResponse(BaseModel):
     category: Optional[str] = None
     priority: Optional[str] = 'medium'
     deadline: Optional[datetime] = None
+    target_date: Optional[datetime] = None
     subject: Optional[str] = None
     discipline_id: Optional[str] = None
     order: int = 0
