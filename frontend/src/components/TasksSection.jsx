@@ -380,25 +380,37 @@ export const TasksSection = ({ userSettings, selectedDate, weekNumber, onModalSt
     const selectedDateEnd = new Date(tasksSelectedDate);
     selectedDateEnd.setHours(23, 59, 59, 999);
     
-    // Сегодняшняя дата для проверки задач без дедлайна
+    // Сегодняшняя дата для проверки задач без target_date
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
     
     const allTasks = [];
     
     filteredTasks.forEach(task => {
-      // Задачи без дедлайна показываем ТОЛЬКО на сегодняшний день
-      if (!task.deadline) {
-        if (selectedDateStart.getTime() === todayStart.getTime()) {
+      // ПРИОРИТЕТ 1: Задачи с target_date - показываем на соответствующую дату
+      if (task.target_date) {
+        const targetDate = new Date(task.target_date);
+        targetDate.setHours(0, 0, 0, 0);
+        
+        if (targetDate.getTime() === selectedDateStart.getTime()) {
           allTasks.push(task);
         }
         return;
       }
       
-      const deadline = new Date(task.deadline);
+      // ПРИОРИТЕТ 2: Задачи с deadline но без target_date - показываем на дату deadline
+      if (task.deadline) {
+        const deadline = new Date(task.deadline);
+        deadline.setHours(0, 0, 0, 0);
+        
+        if (deadline.getTime() === selectedDateStart.getTime()) {
+          allTasks.push(task);
+        }
+        return;
+      }
       
-      // Показываем задачи с дедлайном только на ту дату, на которую установлен дедлайн
-      if (deadline >= selectedDateStart && deadline <= selectedDateEnd) {
+      // ПРИОРИТЕТ 3: Задачи без target_date и без deadline - показываем ТОЛЬКО на сегодня
+      if (selectedDateStart.getTime() === todayStart.getTime()) {
         allTasks.push(task);
       }
     });
