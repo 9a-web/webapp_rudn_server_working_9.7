@@ -4,6 +4,7 @@ import { ClipboardList, Check, Plus, Edit2, Trash2, X, Flag, Calendar, AlertCirc
 import { tasksAPI, scheduleAPI } from '../services/api';
 import { useTelegram } from '../contexts/TelegramContext';
 import { AddTaskModal } from './AddTaskModal';
+import { EditTaskModal } from './EditTaskModal';
 import { WeekDateSelector } from './WeekDateSelector';
 import { tasksCompleteConfetti } from '../utils/confetti';
 
