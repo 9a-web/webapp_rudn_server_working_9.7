@@ -697,7 +697,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Admin Panel - User Activity Analytics & Statistics"
+    - "Language Switching - i18n Integration"
   stuck_tasks:
     - "Language Switching - i18n Integration"
   test_all: false
