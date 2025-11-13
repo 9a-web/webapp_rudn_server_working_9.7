@@ -98,7 +98,8 @@ const Home = () => {
 
   // Загрузка расписания при изменении настроек или недели
   useEffect(() => {
-    if (userSettings) {
+    // Проверяем, что у пользователя есть полные настройки группы
+    if (userSettings && userSettings.group_id && userSettings.facultet_id) {
       loadSchedule();
     }
   }, [userSettings, weekNumber]);
