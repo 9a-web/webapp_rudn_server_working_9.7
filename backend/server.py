@@ -105,6 +105,9 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
+# Global bot application instance
+bot_application = None
+
 # Create the main app without a prefix
 app = FastAPI(title="RUDN Schedule API", version="1.0.0")
 
