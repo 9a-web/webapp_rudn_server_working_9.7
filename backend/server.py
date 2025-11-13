@@ -2220,6 +2220,18 @@ async def startup_event():
         logger.info("Notification scheduler started successfully")
     except Exception as e:
         logger.error(f"Failed to start notification scheduler: {e}")
+    
+    # Запускаем Telegram бота в отдельном потоке
+    try:
+        def run_bot():
+            from telegram_bot import main as bot_main
+            bot_main()
+        
+        bot_thread = threading.Thread(target=run_bot, daemon=True)
+        bot_thread.start()
+        logger.info("Telegram bot started successfully in separate thread")
+    except Exception as e:
+        logger.error(f"Failed to start Telegram bot: {e}")
 
 
 @app.on_event("shutdown")
