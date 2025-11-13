@@ -311,7 +311,7 @@ const AdminPanel = ({ isOpen, onClose }) => {
 
                   {/* Weekly Activity */}
                   <ChartCard title="Активность по дням недели" icon={<Calendar />}>
-                    <ResponsiveContainer width="100%" height={250}>
+                    <ResponsiveContainer width="100%" height={200}>
                       <BarChart data={weeklyActivity}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#ffffff20" />
                         <XAxis dataKey="day" stroke="#888" />
