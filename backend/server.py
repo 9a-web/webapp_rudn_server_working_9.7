@@ -66,7 +66,14 @@ from models import (
     RoomParticipant,
     RoomInviteLinkResponse,
     RoomJoinRequest,
-    RoomTaskCreate
+    RoomTaskCreate,
+    AdminStatsResponse,
+    UserActivityPoint,
+    HourlyActivityPoint,
+    FeatureUsageStats,
+    TopUser,
+    FacultyStats,
+    CourseStats
 )
 from notifications import get_notification_service
 from scheduler import get_scheduler
