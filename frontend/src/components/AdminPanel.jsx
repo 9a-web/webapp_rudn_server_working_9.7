@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, Users, TrendingUp, Calendar, Award, 
   BarChart3, Clock, Activity, Star,
-  BookOpen, Bell, Share2, CheckSquare
+  BookOpen, Bell, Share2, CheckSquare, RefreshCw
 } from 'lucide-react';
 import axios from 'axios';
 import {
