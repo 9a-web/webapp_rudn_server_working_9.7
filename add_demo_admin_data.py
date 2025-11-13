@@ -9,7 +9,7 @@ import uuid
 
 MONGO_URL = "mongodb://localhost:27017"
 db_client = AsyncIOMotorClient(MONGO_URL)
-db = db_client.rudn_schedule
+db = db_client.test_database  # Используем правильную базу из .env
 
 async def add_demo_data():
     print("🚀 Начинаем добавление демо-данных...")
