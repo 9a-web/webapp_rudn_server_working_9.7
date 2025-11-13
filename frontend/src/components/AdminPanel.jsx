@@ -16,6 +16,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001'
 const AdminPanel = ({ isOpen, onClose }) => {
   const [selectedPeriod, setSelectedPeriod] = useState(30); // 7, 30, или null (все время)
   const [loading, setLoading] = useState(true);
+  const [lastUpdate, setLastUpdate] = useState(null);
   
   // Данные статистики
   const [generalStats, setGeneralStats] = useState(null);
