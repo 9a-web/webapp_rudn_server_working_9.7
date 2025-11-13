@@ -20,6 +20,8 @@ export const ShareScheduleModal = ({
   const [copied, setCopied] = useState(false);
   const [botUsername, setBotUsername] = useState('rudn_pro_bot');
   const [webAppUrl, setWebAppUrl] = useState('');
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const scheduleImageRef = useRef(null);
 
   // Получаем информацию о боте при монтировании
   useEffect(() => {
