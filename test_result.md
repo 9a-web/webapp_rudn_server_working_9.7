@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Add language switching functionality (Russian/English) to the RUDN Schedule Telegram Web App without changing the existing UX/UI design"
+user_problem_statement: "Implement Telegram Bot with /start command that adds users to database on first use and shows welcome message with Web App button"
 
 backend:
   - task: "GET /api/faculties - Faculty List Endpoint"
