@@ -127,6 +127,117 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         )
 
 
+async def users_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    Обработчик команды /users
+    Показывает список всех пользователей (только для администраторов)
+    """
+    user = update.effective_user
+    
+    if not user:
+        logger.warning("Не удалось получить информацию о пользователе")
+        return
+    
+    telegram_id = user.id
+    
+    # Проверка прав администратора
+    if telegram_id not in ADMIN_IDS:
+        logger.warning(f"Неавторизованная попытка использовать /users от {telegram_id} (@{user.username})")
+        await update.message.reply_text(
+            "❌ У вас нет прав для использования этой команды."
+        )
+        return
+    
+    logger.info(f"Команда /users от администратора: {telegram_id} (@{user.username})")
+    
+    try:
+        # Получаем всех пользователей из БД
+        users_cursor = db.user_settings.find().sort("created_at", -1)
+        users_list = await users_cursor.to_list(length=None)
+        
+        if not users_list:
+            await update.message.reply_text("📭 Пользователей в базе данных пока нет.")
+            return
+        
+        # Формируем сообщение со списком пользователей
+        message_parts = [f"👥 <b>Список пользователей</b> ({len(users_list)} чел.)\n"]
+        
+        for idx, user_data in enumerate(users_list, 1):
+            telegram_id = user_data.get('telegram_id', 'N/A')
+            username = user_data.get('username', 'нет')
+            first_name = user_data.get('first_name', '')
+            last_name = user_data.get('last_name', '')
+            full_name = f"{first_name} {last_name}".strip() or "Нет имени"
+            
+            group_name = user_data.get('group_name', 'Не выбрана')
+            created_at = user_data.get('created_at')
+            last_activity = user_data.get('last_activity')
+            
+            # Форматируем дату регистрации
+            if created_at:
+                if isinstance(created_at, str):
+                    from datetime import datetime as dt
+                    created_at = dt.fromisoformat(created_at.replace('Z', '+00:00'))
+                date_str = created_at.strftime("%d.%m.%Y")
+            else:
+                date_str = "N/A"
+            
+            # Форматируем последнюю активность
+            if last_activity:
+                if isinstance(last_activity, str):
+                    from datetime import datetime as dt
+                    last_activity = dt.fromisoformat(last_activity.replace('Z', '+00:00'))
+                
+                time_diff = datetime.utcnow() - last_activity
+                if time_diff.days == 0:
+                    activity_str = "сегодня"
+                elif time_diff.days == 1:
+                    activity_str = "вчера"
+                elif time_diff.days < 7:
+                    activity_str = f"{time_diff.days} дн. назад"
+                else:
+                    activity_str = last_activity.strftime("%d.%m.%Y")
+            else:
+                activity_str = "N/A"
+            
+            user_line = f"\n{idx}. <b>{full_name}</b> (@{username})\n"
+            user_line += f"   ID: <code>{telegram_id}</code>\n"
+            user_line += f"   Группа: {group_name}\n"
+            user_line += f"   Регистрация: {date_str}\n"
+            user_line += f"   Активность: {activity_str}\n"
+            
+            message_parts.append(user_line)
+        
+        # Telegram ограничивает сообщения 4096 символами
+        # Разбиваем на несколько сообщений если нужно
+        full_message = "".join(message_parts)
+        
+        if len(full_message) <= 4096:
+            await update.message.reply_text(full_message, parse_mode='HTML')
+        else:
+            # Разбиваем на части
+            current_message = message_parts[0]  # Заголовок
+            
+            for part in message_parts[1:]:
+                if len(current_message) + len(part) <= 4000:
+                    current_message += part
+                else:
+                    await update.message.reply_text(current_message, parse_mode='HTML')
+                    current_message = part
+            
+            # Отправляем последнюю часть
+            if current_message:
+                await update.message.reply_text(current_message, parse_mode='HTML')
+        
+        logger.info(f"✅ Отправлен список из {len(users_list)} пользователей администратору {telegram_id}")
+        
+    except Exception as e:
+        logger.error(f"❌ Ошибка при обработке /users: {e}", exc_info=True)
+        await update.message.reply_text(
+            "❌ Произошла ошибка при получении списка пользователей."
+        )
+
+
 def main() -> None:
     """Запуск бота"""
     
