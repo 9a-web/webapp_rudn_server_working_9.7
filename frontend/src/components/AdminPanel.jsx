@@ -322,8 +322,8 @@ const AdminPanel = ({ isOpen, onClose }) => {
                 {/* Top Users and Faculty/Course Stats */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Top Users */}
-                  {topUsers.length > 0 && (
-                    <ChartCard title="Топ пользователей (по очкам)" icon={<Star />}>
+                  <ChartCard title="Топ пользователей (по очкам)" icon={<Star />}>
+                    {topUsers.length > 0 ? (
                       <div className="space-y-2">
                         {topUsers.map((user, index) => (
                           <div
@@ -354,12 +354,16 @@ const AdminPanel = ({ isOpen, onClose }) => {
                           </div>
                         ))}
                       </div>
-                    </ChartCard>
-                  )}
+                    ) : (
+                      <div className="h-[300px] flex items-center justify-center text-gray-500">
+                        Нет активных пользователей
+                      </div>
+                    )}
+                  </ChartCard>
 
                   {/* Faculty Stats */}
-                  {facultyStats.length > 0 && (
-                    <ChartCard title="Распределение по факультетам" icon={<BookOpen />}>
+                  <ChartCard title="Распределение по факультетам" icon={<BookOpen />}>
+                    {facultyStats.length > 0 ? (
                       <ResponsiveContainer width="100%" height={300}>
                         <PieChart>
                           <Pie
@@ -384,8 +388,12 @@ const AdminPanel = ({ isOpen, onClose }) => {
                           />
                         </PieChart>
                       </ResponsiveContainer>
-                    </ChartCard>
-                  )}
+                    ) : (
+                      <div className="h-[300px] flex items-center justify-center text-gray-500">
+                        Нет данных о факультетах
+                      </div>
+                    )}
+                  </ChartCard>
                 </div>
 
                 {/* Course Distribution */}
