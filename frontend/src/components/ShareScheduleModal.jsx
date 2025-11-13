@@ -183,10 +183,76 @@ export const ShareScheduleModal = ({
   };
 
   // Шаринг как изображение (screenshot)
-  const handleShareAsImage = () => {
+  const handleShareAsImage = async () => {
     if (hapticFeedback) hapticFeedback('impact', 'medium');
-    // TODO: Implement screenshot functionality
-    alert('Функция скриншота в разработке! 📸');
+    
+    if (!scheduleImageRef.current) {
+      console.error('Schedule image ref not found');
+      return;
+    }
+    
+    setIsGeneratingImage(true);
+    
+    try {
+      // Отслеживаем действие сохранения как картинку
+      if (telegramId) {
+        try {
+          await achievementsAPI.trackAction(telegramId, 'share_schedule', {
+            source: 'share_modal_image',
+            date: new Date().toISOString()
+          });
+        } catch (error) {
+          console.error('Failed to track share action:', error);
+        }
+      }
+      
+      // Генерируем изображение с высоким качеством
+      const dataUrl = await toPng(scheduleImageRef.current, {
+        cacheBust: true,
+        pixelRatio: 2, // Увеличиваем разрешение для лучшего качества
+        backgroundColor: '#ffffff',
+      });
+      
+      // Создаем ссылку для скачивания
+      const link = document.createElement('a');
+      const dateStr = selectedDate.toLocaleDateString('ru-RU', { 
+        day: '2-digit', 
+        month: '2-digit',
+        year: 'numeric'
+      }).replace(/\./g, '-');
+      link.download = `raspisanie-${dateStr}.png`;
+      link.href = dataUrl;
+      link.click();
+      
+      if (hapticFeedback) hapticFeedback('notification', 'success');
+      
+      // Опционально: отправляем изображение через Telegram Web App API
+      if (window.Telegram?.WebApp) {
+        // Пытаемся открыть изображение в новом окне для возможности поделиться
+        const blob = await (await fetch(dataUrl)).blob();
+        const file = new File([blob], `raspisanie-${dateStr}.png`, { type: 'image/png' });
+        
+        // Если доступен API для шаринга файлов
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              files: [file],
+              title: 'Расписание RUDN',
+              text: `Расписание на ${formatDate(selectedDate)}`
+            });
+          } catch (err) {
+            console.log('Share cancelled or failed:', err);
+          }
+        }
+      }
+      
+    } catch (err) {
+      console.error('Failed to generate image:', err);
+      if (hapticFeedback) hapticFeedback('notification', 'error');
+      alert('Не удалось создать изображение. Попробуйте ещё раз.');
+    } finally {
+      setIsGeneratingImage(false);
+    }
   };
 
   // Создание приглашения в группу
