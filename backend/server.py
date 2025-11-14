@@ -75,7 +75,16 @@ from models import (
     FeatureUsageStats,
     TopUser,
     FacultyStats,
-    CourseStats
+    CourseStats,
+    Subtask,
+    SubtaskCreate,
+    SubtaskUpdate,
+    GroupTaskUpdate,
+    RoomActivity,
+    RoomActivityResponse,
+    RoomStatsResponse,
+    ParticipantRoleUpdate,
+    TaskReorderRequest as RoomTaskReorderRequest
 )
 from notifications import get_notification_service
 from scheduler import get_scheduler
