@@ -1793,6 +1793,440 @@ async def get_room_tasks(room_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@api_router.put("/group-tasks/{task_id}/update", response_model=GroupTaskResponse)
+async def update_group_task(task_id: str, update_data: GroupTaskUpdate):
+    """Обновить групповую задачу (название, описание, дедлайн, категорию, приоритет, теги)"""
+    try:
+        task_doc = await db.group_tasks.find_one({"task_id": task_id})
+        
+        if not task_doc:
+            raise HTTPException(status_code=404, detail="Задача не найдена")
+        
+        # Подготавливаем данные для обновления
+        update_fields = {}
+        if update_data.title is not None:
+            update_fields["title"] = update_data.title
+        if update_data.description is not None:
+            update_fields["description"] = update_data.description
+        if update_data.deadline is not None:
+            update_fields["deadline"] = update_data.deadline
+        if update_data.category is not None:
+            update_fields["category"] = update_data.category
+        if update_data.priority is not None:
+            update_fields["priority"] = update_data.priority
+        if update_data.status is not None:
+            update_fields["status"] = update_data.status
+        if update_data.tags is not None:
+            update_fields["tags"] = update_data.tags
+        
+        update_fields["updated_at"] = datetime.utcnow()
+        
+        # Обновляем задачу
+        await db.group_tasks.update_one(
+            {"task_id": task_id},
+            {"$set": update_fields}
+        )
+        
+        # Получаем обновленную задачу
+        updated_task = await db.group_tasks.find_one({"task_id": task_id})
+        
+        # Подсчитываем статистику
+        participants = updated_task.get("participants", [])
+        total_participants = len(participants)
+        completed_participants = sum(1 for p in participants if p.get("completed", False))
+        completion_percentage = 0
+        if total_participants > 0:
+            completion_percentage = int((completed_participants / total_participants) * 100)
+        
+        # Подсчитываем количество комментариев
+        comments_count = await db.group_task_comments.count_documents({"task_id": task_id})
+        
+        # Логируем активность
+        if updated_task.get("room_id"):
+            activity = RoomActivity(
+                room_id=updated_task["room_id"],
+                user_id=updated_task["owner_id"],
+                username="",
+                first_name="User",
+                action_type="task_updated",
+                action_details={"task_title": updated_task["title"], "task_id": task_id}
+            )
+            await db.room_activities.insert_one(activity.model_dump())
+        
+        return GroupTaskResponse(
+            **updated_task,
+            completion_percentage=completion_percentage,
+            total_participants=total_participants,
+            completed_participants=completed_participants,
+            comments_count=comments_count
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Ошибка при обновлении задачи: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/group-tasks/{task_id}/subtasks", response_model=GroupTaskResponse)
+async def add_subtask(task_id: str, subtask: SubtaskCreate):
+    """Добавить подзадачу"""
+    try:
+        task_doc = await db.group_tasks.find_one({"task_id": task_id})
+        
+        if not task_doc:
+            raise HTTPException(status_code=404, detail="Задача не найдена")
+        
+        # Создаем подзадачу
+        new_subtask = Subtask(
+            title=subtask.title,
+            order=len(task_doc.get("subtasks", []))
+        )
+        
+        # Добавляем подзадачу к задаче
+        await db.group_tasks.update_one(
+            {"task_id": task_id},
+            {
+                "$push": {"subtasks": new_subtask.model_dump()},
+                "$set": {"updated_at": datetime.utcnow()}
+            }
+        )
+        
+        # Получаем обновленную задачу
+        updated_task = await db.group_tasks.find_one({"task_id": task_id})
+        
+        # Подсчитываем статистику
+        participants = updated_task.get("participants", [])
+        total_participants = len(participants)
+        completed_participants = sum(1 for p in participants if p.get("completed", False))
+        completion_percentage = 0
+        if total_participants > 0:
+            completion_percentage = int((completed_participants / total_participants) * 100)
+        
+        comments_count = await db.group_task_comments.count_documents({"task_id": task_id})
+        
+        return GroupTaskResponse(
+            **updated_task,
+            completion_percentage=completion_percentage,
+            total_participants=total_participants,
+            completed_participants=completed_participants,
+            comments_count=comments_count
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Ошибка при добавлении подзадачи: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.put("/group-tasks/{task_id}/subtasks/{subtask_id}", response_model=GroupTaskResponse)
+async def update_subtask(task_id: str, subtask_id: str, update_data: SubtaskUpdate):
+    """Обновить подзадачу (название, статус выполнения)"""
+    try:
+        task_doc = await db.group_tasks.find_one({"task_id": task_id})
+        
+        if not task_doc:
+            raise HTTPException(status_code=404, detail="Задача не найдена")
+        
+        # Находим подзадачу
+        subtasks = task_doc.get("subtasks", [])
+        subtask_index = next((i for i, s in enumerate(subtasks) if s.get("subtask_id") == subtask_id), None)
+        
+        if subtask_index is None:
+            raise HTTPException(status_code=404, detail="Подзадача не найдена")
+        
+        # Обновляем подзадачу
+        if update_data.title is not None:
+            subtasks[subtask_index]["title"] = update_data.title
+        if update_data.completed is not None:
+            subtasks[subtask_index]["completed"] = update_data.completed
+            if update_data.completed:
+                subtasks[subtask_index]["completed_at"] = datetime.utcnow()
+        
+        # Сохраняем изменения
+        await db.group_tasks.update_one(
+            {"task_id": task_id},
+            {
+                "$set": {
+                    "subtasks": subtasks,
+                    "updated_at": datetime.utcnow()
+                }
+            }
+        )
+        
+        # Получаем обновленную задачу
+        updated_task = await db.group_tasks.find_one({"task_id": task_id})
+        
+        # Подсчитываем статистику
+        participants = updated_task.get("participants", [])
+        total_participants = len(participants)
+        completed_participants = sum(1 for p in participants if p.get("completed", False))
+        completion_percentage = 0
+        if total_participants > 0:
+            completion_percentage = int((completed_participants / total_participants) * 100)
+        
+        comments_count = await db.group_task_comments.count_documents({"task_id": task_id})
+        
+        return GroupTaskResponse(
+            **updated_task,
+            completion_percentage=completion_percentage,
+            total_participants=total_participants,
+            completed_participants=completed_participants,
+            comments_count=comments_count
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Ошибка при обновлении подзадачи: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.delete("/group-tasks/{task_id}/subtasks/{subtask_id}", response_model=GroupTaskResponse)
+async def delete_subtask(task_id: str, subtask_id: str):
+    """Удалить подзадачу"""
+    try:
+        task_doc = await db.group_tasks.find_one({"task_id": task_id})
+        
+        if not task_doc:
+            raise HTTPException(status_code=404, detail="Задача не найдена")
+        
+        # Удаляем подзадачу
+        await db.group_tasks.update_one(
+            {"task_id": task_id},
+            {
+                "$pull": {"subtasks": {"subtask_id": subtask_id}},
+                "$set": {"updated_at": datetime.utcnow()}
+            }
+        )
+        
+        # Получаем обновленную задачу
+        updated_task = await db.group_tasks.find_one({"task_id": task_id})
+        
+        # Подсчитываем статистику
+        participants = updated_task.get("participants", [])
+        total_participants = len(participants)
+        completed_participants = sum(1 for p in participants if p.get("completed", False))
+        completion_percentage = 0
+        if total_participants > 0:
+            completion_percentage = int((completed_participants / total_participants) * 100)
+        
+        comments_count = await db.group_task_comments.count_documents({"task_id": task_id})
+        
+        return GroupTaskResponse(
+            **updated_task,
+            completion_percentage=completion_percentage,
+            total_participants=total_participants,
+            completed_participants=completed_participants,
+            comments_count=comments_count
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Ошибка при удалении подзадачи: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/rooms/{room_id}/activity", response_model=List[RoomActivityResponse])
+async def get_room_activity(room_id: str, limit: int = 50):
+    """Получить историю активности комнаты"""
+    try:
+        # Проверяем существование комнаты
+        room_doc = await db.rooms.find_one({"room_id": room_id})
+        
+        if not room_doc:
+            raise HTTPException(status_code=404, detail="Комната не найдена")
+        
+        # Получаем активности
+        activities_cursor = db.room_activities.find({"room_id": room_id}).sort("created_at", -1).limit(limit)
+        
+        activities = []
+        async for activity_doc in activities_cursor:
+            activities.append(RoomActivityResponse(**activity_doc))
+        
+        return activities
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Ошибка при получении активности комнаты: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/rooms/{room_id}/stats", response_model=RoomStatsResponse)
+async def get_room_stats(room_id: str):
+    """Получить статистику комнаты"""
+    try:
+        # Проверяем существование комнаты
+        room_doc = await db.rooms.find_one({"room_id": room_id})
+        
+        if not room_doc:
+            raise HTTPException(status_code=404, detail="Комната не найдена")
+        
+        # Получаем все задачи комнаты
+        tasks_cursor = db.group_tasks.find({"room_id": room_id})
+        
+        total_tasks = 0
+        completed_tasks = 0
+        overdue_tasks = 0
+        in_progress_tasks = 0
+        
+        async for task in tasks_cursor:
+            total_tasks += 1
+            status = task.get("status", "created")
+            
+            if status == "completed":
+                completed_tasks += 1
+            elif status == "overdue":
+                overdue_tasks += 1
+            elif status == "in_progress":
+                in_progress_tasks += 1
+        
+        # Подсчитываем процент выполнения
+        completion_percentage = 0
+        if total_tasks > 0:
+            completion_percentage = int((completed_tasks / total_tasks) * 100)
+        
+        # Статистика по участникам
+        participants = room_doc.get("participants", [])
+        participants_stats = []
+        
+        for participant in participants:
+            telegram_id = participant.get("telegram_id")
+            
+            # Подсчитываем задачи участника
+            user_tasks = await db.group_tasks.count_documents({
+                "room_id": room_id,
+                "owner_id": telegram_id
+            })
+            
+            # Подсчитываем выполненные задачи
+            user_completed = 0
+            async for task in db.group_tasks.find({"room_id": room_id}):
+                for p in task.get("participants", []):
+                    if p.get("telegram_id") == telegram_id and p.get("completed", False):
+                        user_completed += 1
+                        break
+            
+            participants_stats.append({
+                "telegram_id": telegram_id,
+                "username": participant.get("username"),
+                "first_name": participant.get("first_name"),
+                "role": participant.get("role"),
+                "tasks_created": user_tasks,
+                "tasks_completed": user_completed,
+                "joined_at": participant.get("joined_at")
+            })
+        
+        # Сортируем по количеству выполненных задач
+        participants_stats.sort(key=lambda x: x["tasks_completed"], reverse=True)
+        
+        # График активности по дням (последние 7 дней)
+        activity_chart = []
+        for i in range(7):
+            day_start = datetime.utcnow() - timedelta(days=i)
+            day_start = day_start.replace(hour=0, minute=0, second=0, microsecond=0)
+            day_end = day_start + timedelta(days=1)
+            
+            day_activities = await db.room_activities.count_documents({
+                "room_id": room_id,
+                "created_at": {"$gte": day_start, "$lt": day_end}
+            })
+            
+            activity_chart.append({
+                "date": day_start.strftime("%Y-%m-%d"),
+                "activities": day_activities
+            })
+        
+        activity_chart.reverse()
+        
+        return RoomStatsResponse(
+            room_id=room_id,
+            total_tasks=total_tasks,
+            completed_tasks=completed_tasks,
+            overdue_tasks=overdue_tasks,
+            in_progress_tasks=in_progress_tasks,
+            completion_percentage=completion_percentage,
+            participants_stats=participants_stats,
+            activity_chart=activity_chart
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Ошибка при получении статистики комнаты: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.put("/rooms/{room_id}/participant-role", response_model=SuccessResponse)
+async def update_participant_role(role_update: ParticipantRoleUpdate):
+    """Изменить роль участника комнаты"""
+    try:
+        room_doc = await db.rooms.find_one({"room_id": role_update.room_id})
+        
+        if not room_doc:
+            raise HTTPException(status_code=404, detail="Комната не найдена")
+        
+        # Проверяем права (только owner и admin могут менять роли)
+        changer = next((p for p in room_doc.get("participants", []) if p.get("telegram_id") == role_update.changed_by), None)
+        
+        if not changer or changer.get("role") not in ["owner", "admin"]:
+            raise HTTPException(status_code=403, detail="Недостаточно прав")
+        
+        # Нельзя изменить роль owner
+        target = next((p for p in room_doc.get("participants", []) if p.get("telegram_id") == role_update.telegram_id), None)
+        
+        if target and target.get("role") == "owner":
+            raise HTTPException(status_code=403, detail="Нельзя изменить роль владельца")
+        
+        # Обновляем роль
+        await db.rooms.update_one(
+            {"room_id": role_update.room_id, "participants.telegram_id": role_update.telegram_id},
+            {"$set": {"participants.$.role": role_update.new_role}}
+        )
+        
+        # Логируем активность
+        activity = RoomActivity(
+            room_id=role_update.room_id,
+            user_id=role_update.changed_by,
+            username="",
+            first_name="User",
+            action_type="role_changed",
+            action_details={
+                "target_user": role_update.telegram_id,
+                "new_role": role_update.new_role
+            }
+        )
+        await db.room_activities.insert_one(activity.model_dump())
+        
+        return SuccessResponse(success=True, message="Роль успешно обновлена")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Ошибка при изменении роли: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.put("/rooms/{room_id}/tasks-reorder", response_model=SuccessResponse)
+async def reorder_room_tasks(reorder_request: TaskReorderRequest):
+    """Изменить порядок задач в комнате (drag & drop)"""
+    try:
+        room_doc = await db.rooms.find_one({"room_id": reorder_request.room_id})
+        
+        if not room_doc:
+            raise HTTPException(status_code=404, detail="Комната не найдена")
+        
+        # Обновляем порядок для каждой задачи
+        for task_order in reorder_request.tasks:
+            await db.group_tasks.update_one(
+                {"task_id": task_order["task_id"]},
+                {"$set": {"order": task_order["order"]}}
+            )
+        
+        return SuccessResponse(success=True, message="Порядок задач обновлен")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Ошибка при изменении порядка задач: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ============ АДМИН ПАНЕЛЬ - ENDPOINTS ============
 
 @api_router.get("/admin/stats")
