@@ -681,6 +681,14 @@ class ParticipantRoleUpdate(BaseModel):
     changed_by: int  # кто меняет
 
 
+
+class RoomUpdate(BaseModel):
+    """Запрос на обновление комнаты"""
+    name: Optional[str] = None
+    description: Optional[str] = None
+    color: Optional[str] = None
+
+
 class TaskReorderRequest(BaseModel):
     """Запрос на изменение порядка задач"""
     room_id: str
