@@ -52,7 +52,8 @@ const CreateRoomModal = ({ isOpen, onClose, onCreateRoom }) => {
 
       await onCreateRoom({
         name: name.trim(),
-        description: description.trim() || null
+        description: description.trim() || null,
+        color: selectedColor
       });
 
       // Закрываем модальное окно после успешного создания
