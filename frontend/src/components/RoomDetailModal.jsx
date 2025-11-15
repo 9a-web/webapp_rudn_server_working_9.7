@@ -205,13 +205,25 @@ const RoomDetailModal = ({ isOpen, onClose, room, userSettings, onRoomDeleted, o
   };
 
   const handleAddTask = async () => {
-    if (!newTaskTitle.trim() || !room || !userSettings) return;
+    console.log('handleAddTask called', { newTaskTitle, room, userSettings });
+    
+    if (!newTaskTitle.trim()) {
+      console.log('Task title is empty');
+      return;
+    }
+    
+    if (!room || !userSettings) {
+      console.error('Missing room or userSettings', { room, userSettings });
+      return;
+    }
 
     try {
-      await createRoomTask(room.room_id, {
+      console.log('Creating room task...');
+      const result = await createRoomTask(room.room_id, {
         title: newTaskTitle.trim(),
         telegram_id: userSettings.telegram_id
       });
+      console.log('Task created successfully:', result);
 
       setNewTaskTitle('');
       setShowAddTask(false);
@@ -222,6 +234,7 @@ const RoomDetailModal = ({ isOpen, onClose, room, userSettings, onRoomDeleted, o
       }
     } catch (error) {
       console.error('Error adding task:', error);
+      alert('Ошибка при создании задачи: ' + (error.response?.data?.detail || error.message));
       if (webApp?.HapticFeedback) {
         webApp.HapticFeedback.notificationOccurred('error');
       }
