@@ -136,8 +136,7 @@ export const TasksSection = ({ userSettings, selectedDate, weekNumber, onModalSt
     try {
       const newRoom = await roomsAPI.createRoom({
         ...roomData,
-        telegram_id: userSettings.telegram_id,
-        color: 'blue'
+        telegram_id: userSettings.telegram_id
       });
       setRooms(prev => [...prev, newRoom]);
       setIsCreateRoomModalOpen(false);
@@ -145,6 +144,13 @@ export const TasksSection = ({ userSettings, selectedDate, weekNumber, onModalSt
     } catch (error) {
       console.error('Error creating room:', error);
       hapticFeedback && hapticFeedback('notification', 'error');
+      
+      // Показываем понятное сообщение об ошибке
+      const errorMessage = error.response?.data?.detail || error.message || 'Неизвестная ошибка';
+      alert('Ошибка при создании комнаты: ' + errorMessage);
+      
+      // Пробрасываем ошибку дальше
+      throw error;
     }
   };
 
