@@ -685,10 +685,10 @@ frontend:
   - task: "Rooms Critical Fixes - Buttons & Mobile Adaptation"
     implemented: true
     working: true
-    file: "/app/backend/models.py, /app/frontend/src/components/RoomDetailModal.jsx, /app/frontend/src/components/RoomCard.jsx, /app/frontend/src/components/TasksSection.jsx"
+    file: "/app/backend/models.py, /app/frontend/src/components/RoomDetailModal.jsx, /app/frontend/src/components/AddRoomTaskModal.jsx, /app/frontend/src/components/RoomCard.jsx, /app/frontend/src/components/TasksSection.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: "NA"
           agent: "main"
