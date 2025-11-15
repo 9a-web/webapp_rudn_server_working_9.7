@@ -164,39 +164,43 @@ const RoomDetailModal = ({ isOpen, onClose, room, userSettings, onRoomDeleted, o
   const handleLeaveRoom = async () => {
     if (!room || !userSettings || isOwner) return;
 
-    if (webApp?.showPopup) {
-      webApp.showPopup(
-        {
-          title: 'Покинуть комнату?',
-          message: 'Вы больше не сможете видеть задачи этой комнаты.',
-          buttons: [
-            { id: 'leave', type: 'destructive', text: 'Выйти' },
-            { type: 'cancel' }
-          ]
-        },
-        async (buttonId) => {
-          if (buttonId === 'leave') {
-            try {
-              await leaveRoom(room.room_id, userSettings.telegram_id);
-              
-              if (webApp?.HapticFeedback) {
-                webApp.HapticFeedback.notificationOccurred('success');
-              }
+    // Используем window.confirm как фоллбэк если webApp.showPopup не доступен
+    const confirmLeave = webApp?.showPopup
+      ? await new Promise((resolve) => {
+          webApp.showPopup(
+            {
+              title: 'Покинуть комнату?',
+              message: 'Вы больше не сможете видеть задачи этой комнаты.',
+              buttons: [
+                { id: 'leave', type: 'destructive', text: 'Выйти' },
+                { type: 'cancel' }
+              ]
+            },
+            (buttonId) => resolve(buttonId === 'leave')
+          );
+        })
+      : window.confirm('Покинуть комнату? Вы больше не сможете видеть задачи этой комнаты.');
 
-              if (onRoomDeleted) {
-                onRoomDeleted(room.room_id);
-              }
-              
-              onClose();
-            } catch (error) {
-              console.error('Error leaving room:', error);
-              if (webApp?.HapticFeedback) {
-                webApp.HapticFeedback.notificationOccurred('error');
-              }
-            }
-          }
+    if (confirmLeave) {
+      try {
+        await leaveRoom(room.room_id, userSettings.telegram_id);
+        
+        if (webApp?.HapticFeedback) {
+          webApp.HapticFeedback.notificationOccurred('success');
         }
-      );
+
+        if (onRoomDeleted) {
+          onRoomDeleted(room.room_id);
+        }
+        
+        onClose();
+      } catch (error) {
+        console.error('Error leaving room:', error);
+        if (webApp?.HapticFeedback) {
+          webApp.HapticFeedback.notificationOccurred('error');
+        }
+        alert('Ошибка при выходе из комнаты: ' + error.message);
+      }
     }
   };
 
