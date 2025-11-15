@@ -28,6 +28,7 @@ import TaskDetailModal from './TaskDetailModal';
 import RoomParticipantsList from './RoomParticipantsList';
 import RoomActivityFeed from './RoomActivityFeed';
 import RoomStatsPanel from './RoomStatsPanel';
+import AddRoomTaskModal from './AddRoomTaskModal';
 
 const TABS = [
   { id: 'tasks', name: 'Задачи', icon: CheckCircle },
