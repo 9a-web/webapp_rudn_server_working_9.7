@@ -114,6 +114,9 @@ export const AddTaskModal = ({
       onClose();
     } catch (error) {
       console.error('Error adding task:', error);
+      // Показываем понятное сообщение об ошибке
+      const errorMessage = error?.message || error?.toString() || 'Неизвестная ошибка при создании задачи';
+      alert(`Ошибка при создании задачи: ${errorMessage}`);
     } finally {
       setSaving(false);
     }
