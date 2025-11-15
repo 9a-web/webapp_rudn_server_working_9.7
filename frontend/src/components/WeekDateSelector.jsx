@@ -138,16 +138,16 @@ export const WeekDateSelector = ({
               <motion.button
                 key={uniqueKey}
                 onClick={() => handleDayClick(date)}
-                disabled={future}
-                whileTap={!future ? { scale: 0.95 } : {}}
+                whileTap={{ scale: 0.95 }}
                 className={`
                   relative flex-shrink-0 w-14 h-20 rounded-2xl
                   flex flex-col items-center justify-center
-                  transition-all duration-300
-                  ${future ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}
+                  transition-all duration-300 cursor-pointer
                   ${selected 
                     ? 'bg-gradient-to-br from-yellow-400 to-orange-400 shadow-lg shadow-yellow-500/30' 
-                    : 'bg-white border border-gray-200 hover:border-yellow-300 hover:shadow-md'
+                    : future
+                      ? 'bg-white border border-gray-200 hover:border-blue-300 hover:shadow-md opacity-70'
+                      : 'bg-white border border-gray-200 hover:border-yellow-300 hover:shadow-md'
                   }
                 `}
                 style={{
