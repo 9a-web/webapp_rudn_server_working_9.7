@@ -4,12 +4,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Users, Save } from 'lucide-react';
+import { X, Users, Save, Palette } from 'lucide-react';
 import { useTelegram } from '../contexts/TelegramContext';
+import { ROOM_COLORS, getRoomColor } from '../constants/roomColors';
 
 const CreateRoomModal = ({ isOpen, onClose, onCreateRoom }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [selectedColor, setSelectedColor] = useState('blue');
   const [isSaving, setIsSaving] = useState(false);
   const { webApp } = useTelegram();
 
