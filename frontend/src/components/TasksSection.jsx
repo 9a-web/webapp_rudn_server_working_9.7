@@ -980,7 +980,8 @@ const TodayTaskItem = ({
   editingText, 
   setEditingText,
   onToggle,
-  onEdit,
+  onStartEdit,  // Для inline редактирования по двойному клику
+  onEdit,       // Для открытия модального окна EditTaskModal
   onSaveEdit,
   onCancelEdit,
   onDelete,
