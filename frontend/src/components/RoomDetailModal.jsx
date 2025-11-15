@@ -446,11 +446,7 @@ const RoomDetailModal = ({ isOpen, onClose, room, userSettings, onRoomDeleted, o
                   <TasksTab
                     tasks={tasks}
                     isLoading={isLoading}
-                    showAddTask={showAddTask}
-                    newTaskTitle={newTaskTitle}
-                    setNewTaskTitle={setNewTaskTitle}
-                    setShowAddTask={setShowAddTask}
-                    handleAddTask={handleAddTask}
+                    onOpenAddModal={() => setIsAddTaskModalOpen(true)}
                     handleToggleTask={handleToggleTask}
                     handleEditTask={handleEditTask}
                     handleDeleteTask={handleDeleteTask}
