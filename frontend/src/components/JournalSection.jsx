@@ -18,7 +18,7 @@ export const JournalSection = () => {
         </div>
         <div>
           <h2 className="text-2xl font-bold text-[#1C1C1E]">Журнал</h2>
-          <p className="text-sm text-[#999999]">История ваших действий</p>
+          <p className="text-sm text-[#999999]">Электронный журнал посещений</p>
         </div>
       </div>
 
