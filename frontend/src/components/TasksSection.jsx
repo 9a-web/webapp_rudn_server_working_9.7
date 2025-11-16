@@ -16,6 +16,10 @@ import CreateRoomModal from './CreateRoomModal';
 import RoomDetailModal from './RoomDetailModal';
 import * as roomsAPI from '../services/roomsAPI';
 
+// 🔧 FEATURE FLAG: Показать/скрыть функцию комнат
+// Измените на true, чтобы снова показать комнаты
+const SHOW_ROOMS_FEATURE = false;
+
 export const TasksSection = ({ userSettings, selectedDate, weekNumber, onModalStateChange }) => {
   const { user, hapticFeedback } = useTelegram();
   
