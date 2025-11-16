@@ -53,12 +53,12 @@ const WelcomeScreen = ({ onGetStarted }) => {
         
         {/* Let's go logo - Fixed 470px on mobile, responsive on other devices */}
         <motion.div
-          className="w-full flex justify-center"
+          className="w-full flex justify-center -mx-4 sm:mx-0"
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
-          <div className="w-[470px] max-w-full sm:w-[400px] md:w-[450px] lg:w-[500px] aspect-square">
+          <div className="w-[470px] max-w-[calc(100vw-32px)] sm:w-[400px] md:w-[450px] lg:w-[500px] aspect-square">
             <img 
               src="/letsgo.png"
               alt="Let's go"
