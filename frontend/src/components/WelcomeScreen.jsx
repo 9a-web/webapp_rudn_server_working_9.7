@@ -91,11 +91,11 @@ const WelcomeScreen = ({ onGetStarted }) => {
         {/* Get Started Button - Rounded 16px with SF Pro Display Bold */}
         <motion.button
           onClick={handleGetStarted}
-          className="relative w-full max-w-xs sm:max-w-sm bg-[#A3F7BF] text-black text-base sm:text-lg md:text-xl py-3 sm:py-4 md:py-5 px-6 rounded-2xl shadow-lg overflow-hidden"
+          className="relative w-full max-w-xs sm:max-w-sm bg-[#29F99F] text-black text-base sm:text-lg md:text-xl py-3 sm:py-4 md:py-5 px-6 rounded-2xl shadow-lg overflow-hidden"
           style={{
             fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
             fontWeight: 700,
-            boxShadow: '0 10px 30px rgba(163, 247, 191, 0.4), 0 0 20px rgba(163, 247, 191, 0.3)'
+            boxShadow: '0 10px 30px rgba(41, 249, 159, 0.4), 0 0 20px rgba(41, 249, 159, 0.3)'
           }}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
