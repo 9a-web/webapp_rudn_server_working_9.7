@@ -845,7 +845,7 @@ async def update_task(task_id: str, task_update: TaskUpdate):
                 on_time = datetime.utcnow() <= deadline
             
             # Отслеживаем выполнение задачи
-            await achievements.track_user_action(
+            await track_user_action(
                 db,
                 existing_task["telegram_id"],
                 "complete_task",
