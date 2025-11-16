@@ -967,24 +967,29 @@ export const TasksSection = ({ userSettings, selectedDate, weekNumber, onModalSt
         scheduleSubjects={scheduleSubjects}
       />
 
-      {/* Модальное окно создания комнаты */}
-      <CreateRoomModal
-        isOpen={isCreateRoomModalOpen}
-        onClose={() => setIsCreateRoomModalOpen(false)}
-        onCreateRoom={handleCreateRoom}
-      />
+      {/* Модальные окна комнат (СКРЫТО: измените SHOW_ROOMS_FEATURE на true, чтобы показать) */}
+      {SHOW_ROOMS_FEATURE && (
+        <>
+          {/* Модальное окно создания комнаты */}
+          <CreateRoomModal
+            isOpen={isCreateRoomModalOpen}
+            onClose={() => setIsCreateRoomModalOpen(false)}
+            onCreateRoom={handleCreateRoom}
+          />
 
-      {/* Модальное окно деталей комнаты */}
-      <RoomDetailModal
-        isOpen={isRoomDetailModalOpen}
-        onClose={() => {
-          setIsRoomDetailModalOpen(false);
-          setSelectedRoom(null);
-        }}
-        room={selectedRoom}
-        userSettings={userSettings}
-        onRoomDeleted={handleRoomDeleted}
-      />
+          {/* Модальное окно деталей комнаты */}
+          <RoomDetailModal
+            isOpen={isRoomDetailModalOpen}
+            onClose={() => {
+              setIsRoomDetailModalOpen(false);
+              setSelectedRoom(null);
+            }}
+            room={selectedRoom}
+            userSettings={userSettings}
+            onRoomDeleted={handleRoomDeleted}
+          />
+        </>
+      )}
     </motion.div>
   );
 };
