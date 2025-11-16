@@ -242,6 +242,18 @@ class UserStats(BaseModel):
     menu_items_visited: List[str] = []  # Посещённые пункты меню
     active_days: List[str] = []  # Дни активности (даты в формате YYYY-MM-DD)
     
+    # Счетчики для достижений "Список дел"
+    tasks_created_total: int = 0  # Всего создано задач
+    tasks_completed_total: int = 0  # Всего выполнено задач
+    tasks_completed_today: int = 0  # Задач выполнено сегодня
+    tasks_completed_early: int = 0  # Задач выполнено до 9:00
+    tasks_completed_on_time: int = 0  # Задач выполнено в срок (без просрочки)
+    task_streak_days: int = 0  # Дней подряд выполнения задач
+    task_streak_current: int = 0  # Текущая серия дней
+    last_task_completion_date: Optional[str] = None  # Дата последнего выполнения (YYYY-MM-DD)
+    last_daily_reset: Optional[str] = None  # Дата последнего сброса счетчика дня
+    first_task_created: bool = False  # Создана ли первая задача
+    
     # Общая статистика
     total_points: int = 0  # Всего очков
     achievements_count: int = 0  # Количество достижений
