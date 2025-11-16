@@ -55,6 +55,13 @@ export const Header = React.memo(({ user, userSettings, onCalendarClick, onNotif
     }
   }, [isMenuOpen, onMenuStateChange]);
 
+  // Уведомляем родительский компонент о состоянии ProfileModal
+  useEffect(() => {
+    if (onProfileStateChange) {
+      onProfileStateChange(isProfileOpen);
+    }
+  }, [isProfileOpen, onProfileStateChange]);
+
   const handleMenuClick = () => {
     if (hapticFeedback) hapticFeedback('impact', 'medium');
     setIsMenuOpen(!isMenuOpen);
