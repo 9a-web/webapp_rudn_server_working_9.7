@@ -18,7 +18,7 @@ export const ShareScheduleModal = ({
   telegramId
 }) => {
   const [copied, setCopied] = useState(false);
-  const [botUsername, setBotUsername] = useState('rudn_pro_bot');
+  const [botUsername, setBotUsername] = useState('rudn_mosbot');
   const [webAppUrl, setWebAppUrl] = useState('');
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const scheduleImageRef = useRef(null);
