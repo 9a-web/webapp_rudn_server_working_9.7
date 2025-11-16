@@ -70,9 +70,9 @@ const WelcomeScreen = ({ onGetStarted }) => {
           </div>
         </motion.div>
 
-        {/* Ready text image - Manage your RUDN schedule */}
+        {/* Ready text image - Overlaps logo slightly */}
         <motion.div
-          className="w-full px-2 sm:px-4"
+          className="w-full px-2 sm:px-4 -mt-8 sm:-mt-12 md:-mt-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
@@ -88,10 +88,13 @@ const WelcomeScreen = ({ onGetStarted }) => {
           />
         </motion.div>
 
-        {/* Get Started Button - Responsive sizing */}
+        {/* Get Started Button - Rounded 16px with SF Pro Display Bold */}
         <motion.button
           onClick={handleGetStarted}
-          className="relative w-full max-w-xs sm:max-w-sm bg-[#A3F7BF] text-black font-semibold text-base sm:text-lg md:text-xl py-3 sm:py-4 md:py-5 px-6 rounded-full shadow-lg overflow-hidden"
+          className="relative w-full max-w-xs sm:max-w-sm bg-[#A3F7BF] text-black text-base sm:text-lg md:text-xl py-3 sm:py-4 md:py-5 px-6 rounded-2xl shadow-lg overflow-hidden"
+          style={{
+            fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif",
+            fontWeight: 700
           style={{
             boxShadow: '0 10px 30px rgba(163, 247, 191, 0.4), 0 0 20px rgba(163, 247, 191, 0.3)'
           }}
