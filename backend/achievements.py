@@ -152,7 +152,80 @@ ACHIEVEMENTS = [
         "emoji": "✨",
         "points": 50,
         "type": "perfectionist",
-        "requirement": 15  # Все остальные достижения (16 - 1)
+        "requirement": 23  # Все остальные достижения (24 - 1)
+    },
+    # Достижения для раздела "Список дел"
+    {
+        "id": "first_task",
+        "name": "Первая задача",
+        "description": "Создал первую задачу",
+        "emoji": "📝",
+        "points": 5,
+        "type": "first_task",
+        "requirement": 1
+    },
+    {
+        "id": "productive_day",
+        "name": "Продуктивный день",
+        "description": "Выполнил 5 задач за день",
+        "emoji": "✅",
+        "points": 15,
+        "type": "productive_day",
+        "requirement": 5
+    },
+    {
+        "id": "early_riser_tasks",
+        "name": "Рано встаешь",
+        "description": "Выполнил 10 задач до 9:00",
+        "emoji": "🌅",
+        "points": 15,
+        "type": "early_riser_tasks",
+        "requirement": 10
+    },
+    {
+        "id": "task_specialist",
+        "name": "Специалист по задачам",
+        "description": "Создал 50 задач",
+        "emoji": "🎯",
+        "points": 20,
+        "type": "task_specialist",
+        "requirement": 50
+    },
+    {
+        "id": "lightning_fast",
+        "name": "Молния",
+        "description": "Выполнил 20 задач за день",
+        "emoji": "⚡",
+        "points": 25,
+        "type": "lightning_fast",
+        "requirement": 20
+    },
+    {
+        "id": "flawless",
+        "name": "Безупречный",
+        "description": "Выполнил 50 задач без просрочки",
+        "emoji": "💎",
+        "points": 30,
+        "type": "flawless",
+        "requirement": 50
+    },
+    {
+        "id": "marathon_runner",
+        "name": "Марафонец",
+        "description": "Выполнял задачи 30 дней подряд",
+        "emoji": "🏃",
+        "points": 30,
+        "type": "marathon_runner",
+        "requirement": 30
+    },
+    {
+        "id": "completion_master",
+        "name": "Мастер завершения",
+        "description": "Выполнил 100 задач",
+        "emoji": "🏆",
+        "points": 40,
+        "type": "completion_master",
+        "requirement": 100
     }
 ]
 
