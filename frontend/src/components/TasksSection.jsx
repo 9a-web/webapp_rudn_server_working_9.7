@@ -112,7 +112,7 @@ export const TasksSection = ({ userSettings, selectedDate, weekNumber, onModalSt
 
   // Загрузка комнат при монтировании
   useEffect(() => {
-    if (userSettings?.telegram_id) {
+    if (SHOW_ROOMS_FEATURE && userSettings?.telegram_id) {
       loadRooms();
     }
   }, [userSettings]);
