@@ -192,3 +192,36 @@ sudo supervisorctl restart frontend
 
 Функция комнат **полностью скрыта** из раздела "Список дел", но **не удалена** из кода.
 Это позволяет быстро вернуть функционал в будущем, изменив одну константу.
+
+---
+
+## Краткая справка
+
+| Действие | Команда/Файл | Значение |
+|----------|-------------|----------|
+| **Скрыть комнаты** | `/app/frontend/src/components/TasksSection.jsx` строка 21 | `const SHOW_ROOMS_FEATURE = false;` |
+| **Показать комнаты** | `/app/frontend/src/components/TasksSection.jsx` строка 21 | `const SHOW_ROOMS_FEATURE = true;` |
+| **Перезапуск frontend** | `sudo supervisorctl restart frontend` | Применить изменения |
+| **Проверка статуса** | `sudo supervisorctl status` | Все сервисы RUNNING |
+| **Логи frontend** | `tail -n 50 /var/log/supervisor/frontend.err.log` | Проверить ошибки |
+| **Логи backend** | `tail -n 50 /var/log/supervisor/backend.err.log` | Проверить ошибки |
+
+### Быстрое включение (одна команда):
+
+```bash
+# Включить комнаты и перезапустить
+sed -i 's/const SHOW_ROOMS_FEATURE = false;/const SHOW_ROOMS_FEATURE = true;/g' /app/frontend/src/components/TasksSection.jsx && sudo supervisorctl restart frontend
+```
+
+### Быстрое отключение (одна команда):
+
+```bash
+# Отключить комнаты и перезапустить
+sed -i 's/const SHOW_ROOMS_FEATURE = true;/const SHOW_ROOMS_FEATURE = false;/g' /app/frontend/src/components/TasksSection.jsx && sudo supervisorctl restart frontend
+```
+
+---
+
+**Дата создания документа:** 16 ноября 2024  
+**Последнее обновление:** 16 ноября 2024  
+**Статус функции комнат:** СКРЫТА (можно включить в любой момент)
