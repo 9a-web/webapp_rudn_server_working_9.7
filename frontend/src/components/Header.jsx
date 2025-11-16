@@ -163,8 +163,8 @@ export const Header = React.memo(({ user, userSettings, onCalendarClick, onNotif
             />
           </motion.div>
           <h1 className="text-sm md:text-base lg:text-lg font-bold tracking-tight leading-tight" style={{ color: '#E7E7E7' }}>
-            <span className="block">RUDN</span>
-            <span className="block">Go</span>
+            <span className="block">Rudn</span>
+            <span className="block">Schedule</span>
           </h1>
         </motion.div>
 
