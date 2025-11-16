@@ -2816,6 +2816,13 @@ class RUDNScheduleAPITester:
             self.test_bot_info_endpoint,
             # Tasks API comprehensive test (as requested)
             self.test_tasks_api_comprehensive,
+            # New Task Achievements Tests (8 new achievements for Tasks section)
+            self.test_new_task_achievements_total_count,
+            self.test_first_task_achievement,
+            self.test_productive_day_achievement,
+            self.test_lightning_fast_achievement,
+            self.test_task_specialist_achievement,
+            self.test_completion_master_achievement,
             # New Admin Panel Tests
             self.test_admin_stats_endpoint,
             self.test_admin_users_activity_endpoint,
