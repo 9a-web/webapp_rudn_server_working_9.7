@@ -58,7 +58,7 @@ const WelcomeScreen = ({ onGetStarted }) => {
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
           <img 
-            src="https://customer-assets.emergentagent.com/job_d99a9a84-5ee1-4538-9525-dda2336cb57f/artifacts/1a8ked6x_letsgo.png"
+            src="/letsgo.png"
             alt="Let's go"
             className="w-full h-auto object-contain"
             style={{ maxHeight: '200px' }}
