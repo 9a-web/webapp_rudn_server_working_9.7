@@ -502,6 +502,7 @@ const Home = () => {
           onNotificationsClick={user ? handleNotificationsClick : null}
           hapticFeedback={hapticFeedback}
           onMenuStateChange={setIsMenuOpen}
+          onProfileStateChange={setIsProfileOpen}
         />
         
         {/* Условное отображение разделов в зависимости от активной вкладки */}
