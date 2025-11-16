@@ -1185,9 +1185,9 @@ class RUDNScheduleAPITester:
                     return False
             
             # Validate specific expected values from request
-            if bot_info['username'] != "rudn_pro_bot":
+            if bot_info['username'] != "rudn_mosbot":
                 self.log_test("GET /api/bot-info", False, 
-                            f"Expected username='rudn_pro_bot', got '{bot_info['username']}'")
+                            f"Expected username='rudn_mosbot', got '{bot_info['username']}'")
                 return False
             
             # Validate data types
