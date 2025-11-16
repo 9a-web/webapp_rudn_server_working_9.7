@@ -131,7 +131,13 @@ export const Header = React.memo(({ user, userSettings, onCalendarClick, onNotif
 
   return (
     <>
-      <header className="px-6 md:px-8 lg:px-10 py-5 md:py-6 flex items-center justify-between">
+      <header 
+        className="px-6 md:px-8 lg:px-10 py-5 md:py-6 flex items-center justify-between"
+        style={{
+          paddingTop: 'calc(var(--header-safe-padding) + 1.25rem)', // 1.25rem = py-5
+          paddingBottom: '1.25rem' // py-5
+        }}
+      >
         {/* Left side - Logo and text */}
         <motion.div 
           className="flex items-center gap-3 md:gap-4 cursor-pointer select-none"
