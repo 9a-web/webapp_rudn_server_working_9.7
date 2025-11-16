@@ -52,6 +52,7 @@ const Home = () => {
   
   // Состояния для пользователя
   const [userSettings, setUserSettings] = useState(null);
+  const [showWelcomeScreen, setShowWelcomeScreen] = useState(false);
   const [showGroupSelector, setShowGroupSelector] = useState(false);
 
   // Состояния для достижений
