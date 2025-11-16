@@ -19,6 +19,30 @@ export const ProfileModal = ({
   const [copiedLink, setCopiedLink] = useState(false);
   const [showReferrals, setShowReferrals] = useState(false);
 
+  // Загрузка реферальных данных при открытии
+  useEffect(() => {
+    const loadReferralData = async () => {
+      if (!isOpen || !user?.id) return;
+      
+      setLoading(true);
+      try {
+        const [codeData, statsData] = await Promise.all([
+          getReferralCode(user.id),
+          getReferralStats(user.id)
+        ]);
+        
+        setReferralData(codeData);
+        setReferralStats(statsData);
+      } catch (error) {
+        console.error('Ошибка загрузки реферальных данных:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadReferralData();
+  }, [isOpen, user]);
+
   // Закрытие при клике вне модального окна
   useEffect(() => {
     const handleClickOutside = (event) => {
