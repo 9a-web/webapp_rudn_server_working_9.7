@@ -28,10 +28,10 @@ export const JournalSection = () => {
           <FileCheck className="w-12 h-12 text-purple-500" strokeWidth={2} />
         </div>
         <h3 className="text-lg font-semibold text-[#1C1C1E] mb-2">
-          Электронный журнал
+          Раздел в разработке
         </h3>
         <p className="text-sm text-[#999999] text-center max-w-xs">
-          Раздел в разработке
+          Скоро здесь появится электронный журнал
         </p>
       </div>
     </motion.div>
