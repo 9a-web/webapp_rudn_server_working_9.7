@@ -74,11 +74,12 @@ const WelcomeScreen = ({ onGetStarted }) => {
         >
           <h1 className="text-white text-2xl sm:text-3xl font-bold leading-tight">
             Manage your{' '}
-            <span className="relative inline-block">
+            <span className="relative inline-block mx-2" style={{ display: 'inline-block', position: 'relative' }}>
               <span 
-                className="relative z-10 px-4 py-1 text-[#A3F7BF] font-bold"
+                className="relative z-10 px-3 py-1 text-[#A3F7BF] font-bold"
                 style={{ 
-                  textShadow: '0 0 20px rgba(163, 247, 191, 0.5)'
+                  textShadow: '0 0 20px rgba(163, 247, 191, 0.5)',
+                  fontSize: '1.1em'
                 }}
               >
                 RUDN
@@ -86,10 +87,15 @@ const WelcomeScreen = ({ onGetStarted }) => {
               <img 
                 src="/elipse.svg"
                 alt=""
-                className="absolute inset-0 w-full h-full"
+                className="absolute"
                 style={{ 
-                  transform: 'scale(1.4)',
-                  filter: 'drop-shadow(0 0 10px rgba(163, 247, 191, 0.3))'
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%) scale(1.6)',
+                  width: '110px',
+                  height: '65px',
+                  filter: 'drop-shadow(0 0 15px rgba(163, 247, 191, 0.5))',
+                  opacity: 0.9
                 }}
               />
             </span>
