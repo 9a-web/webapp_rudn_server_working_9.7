@@ -85,7 +85,12 @@ from models import (
     RoomStatsResponse,
     ParticipantRoleUpdate,
     RoomUpdate,
-    TaskReorderRequest as RoomTaskReorderRequest
+    TaskReorderRequest as RoomTaskReorderRequest,
+    ReferralUser,
+    ReferralStats,
+    ReferralTreeNode,
+    ReferralCodeResponse,
+    ReferralConnection
 )
 from notifications import get_notification_service
 from scheduler import get_scheduler
