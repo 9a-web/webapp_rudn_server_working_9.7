@@ -43,6 +43,7 @@ export const TasksSection = ({ userSettings, selectedDate, weekNumber, onModalSt
   
   // Шаблоны быстрых действий
   const [showQuickActions, setShowQuickActions] = useState(false);
+  const [quickTaskTemplate, setQuickTaskTemplate] = useState(null); // Данные из быстрого шаблона для предзаполнения
   
   // Комнаты (Rooms)
   const [rooms, setRooms] = useState([]);
