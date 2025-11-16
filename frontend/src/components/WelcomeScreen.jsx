@@ -61,7 +61,7 @@ const WelcomeScreen = ({ onGetStarted }) => {
           <img 
             src="/letsgo.png"
             alt="Let's go"
-            className="w-[470px] h-[470px] sm:w-[400px] sm:h-[400px] md:w-[450px] md:h-[450px] lg:w-[500px] lg:h-[500px] object-contain"
+            className="w-[470px] h-[470px] max-w-full sm:w-[400px] sm:h-[400px] md:w-[450px] md:h-[450px] lg:w-[500px] lg:h-[500px] object-contain aspect-square"
           />
         </motion.div>
 
