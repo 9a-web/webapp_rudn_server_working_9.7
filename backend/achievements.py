@@ -331,6 +331,10 @@ async def track_user_action(db, telegram_id: int, action_type: str, metadata: di
         classes_count = metadata.get("classes_count", 1)
         update_data["$inc"] = {"schedule_views": classes_count}
     
+    elif action_type == "detailed_view":
+        # Детальный просмотр - развернутая карточка предмета
+        update_data["$inc"] = {"detailed_views": 1}
+    
     elif action_type == "night_usage":
         update_data["$inc"] = {"night_usage_count": 1}
     
