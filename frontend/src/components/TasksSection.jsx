@@ -920,11 +920,15 @@ export const TasksSection = ({ userSettings, selectedDate, weekNumber, onModalSt
       {/* Модальное окно добавления задачи */}
       <AddTaskModal
         isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
+        onClose={() => {
+          setIsAddModalOpen(false);
+          setQuickTaskTemplate(null); // Сбрасываем шаблон при закрытии
+        }}
         onAddTask={handleAddTask}
         hapticFeedback={hapticFeedback}
         scheduleSubjects={scheduleSubjects}
         selectedDate={tasksSelectedDate}
+        quickTemplate={quickTaskTemplate} // Передаем данные быстрого шаблона
       />
 
       {/* Модальное окно редактирования задачи */}
