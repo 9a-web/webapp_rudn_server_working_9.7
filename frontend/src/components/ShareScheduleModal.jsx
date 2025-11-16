@@ -460,24 +460,24 @@ const ScheduleImageCard = React.forwardRef(({ schedule, selectedDate, groupName,
   return (
     <div 
       ref={ref}
-      className="w-[600px] bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 p-8 rounded-3xl shadow-2xl"
+      className="w-[600px] bg-[#2B2B3A] p-8 rounded-3xl"
       style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
     >
       {/* Header */}
-      <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 mb-6 shadow-lg">
+      <div className="bg-white rounded-2xl p-6 mb-6 shadow-sm">
         <div className="flex items-center justify-between mb-3">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-            📅 Расписание
+          <h1 className="text-3xl font-bold text-[#1C1C1E]">
+            Расписание
           </h1>
           <div className="text-right">
-            <p className="text-sm text-gray-500">RUDN Schedule</p>
+            <p className="text-sm text-gray-600 font-semibold">RUDN Schedule</p>
             <p className="text-xs text-gray-400">Telegram WebApp</p>
           </div>
         </div>
-        <div className="h-1 bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 rounded-full mb-3"></div>
-        <p className="text-lg font-semibold text-gray-800">{formatDate(selectedDate)}</p>
+        <div className="h-px bg-gray-200 mb-3"></div>
+        <p className="text-lg font-semibold text-[#1C1C1E]">{formatDate(selectedDate)}</p>
         {groupName && (
-          <p className="text-sm text-gray-600 mt-1">👥 Группа: {groupName}</p>
+          <p className="text-sm text-gray-600 mt-1">Группа: {groupName}</p>
         )}
       </div>
 
