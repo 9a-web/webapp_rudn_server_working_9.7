@@ -69,6 +69,30 @@ export const ProfileModal = ({
     };
   }, [isOpen, onClose]);
 
+  // Копирование реферальной ссылки
+  const copyReferralLink = async () => {
+    if (!referralData?.referral_link) return;
+    
+    try {
+      await navigator.clipboard.writeText(referralData.referral_link);
+      setCopiedLink(true);
+      if (hapticFeedback) hapticFeedback('impact', 'medium');
+      
+      setTimeout(() => setCopiedLink(false), 2000);
+    } catch (error) {
+      console.error('Ошибка копирования:', error);
+      // Фоллбэк для старых браузеров
+      const textArea = document.createElement('textarea');
+      textArea.value = referralData.referral_link;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2000);
+    }
+  };
+
   if (!user) return null;
 
   // Проверяем, зашел ли пользователь через Telegram или через сайт напрямую
