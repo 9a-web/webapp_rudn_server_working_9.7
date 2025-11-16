@@ -99,20 +99,20 @@ const WelcomeScreen = ({ onGetStarted }) => {
           }}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
+          whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+          whileTap={{ scale: 0.98, transition: { duration: 0.1 } }}
         >
           <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
             animate={{
-              x: ['-100%', '100%'],
+              x: ['-200%', '200%'],
             }}
             transition={{
-              duration: 2,
+              duration: 3,
               repeat: Infinity,
-              ease: "linear",
-              repeatDelay: 1
+              ease: "easeInOut",
+              repeatDelay: 0.5
             }}
           />
           <span className="relative z-10">Погрузиться в RUDN GO</span>
