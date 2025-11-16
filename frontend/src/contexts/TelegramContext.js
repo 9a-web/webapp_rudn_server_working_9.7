@@ -111,7 +111,7 @@ export const TelegramProvider = ({ children }) => {
         );
       }
       
-      // 8. Обновляем CSS переменные для viewport
+      // 8. Обновляем CSS переменные для viewport и safe area
       const updateViewportVars = () => {
         const height = tg.viewportHeight || window.innerHeight;
         const stableHeight = tg.viewportStableHeight || tg.viewportHeight || window.innerHeight;
@@ -119,7 +119,32 @@ export const TelegramProvider = ({ children }) => {
         document.documentElement.style.setProperty('--tg-viewport-height', `${height}px`);
         document.documentElement.style.setProperty('--tg-viewport-stable-height', `${stableHeight}px`);
         
-        console.log('📐 Viewport переменные обновлены:', { height, stableHeight });
+        // 📱 Устанавливаем дополнительный отступ для header в зависимости от платформы
+        // iOS обычно имеет safe-area-inset-top, Android нет
+        const platform = tg.platform || 'unknown';
+        let headerOffset = 10; // Базовый отступ для кнопок закрытия Telegram
+        
+        // На iOS увеличиваем отступ для лучшей видимости (notch/dynamic island)
+        if (platform === 'ios' || platform === 'macos') {
+          headerOffset = 15;
+        }
+        // На Android можно использовать меньший отступ
+        else if (platform === 'android') {
+          headerOffset = 12;
+        }
+        // Telegram Desktop - минимальный отступ
+        else if (platform === 'tdesktop' || platform === 'web' || platform === 'weba') {
+          headerOffset = 8;
+        }
+        
+        document.documentElement.style.setProperty('--telegram-header-offset', `${headerOffset}px`);
+        
+        console.log('📐 Viewport переменные обновлены:', { 
+          height, 
+          stableHeight, 
+          platform,
+          headerOffset: `${headerOffset}px`
+        });
       };
       
       updateViewportVars();
