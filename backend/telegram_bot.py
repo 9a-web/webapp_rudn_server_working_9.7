@@ -409,7 +409,18 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
             logger.info(f"✅ Создан новый пользователь: {telegram_id} (@{username})")
             
             # Приветственное сообщение для нового пользователя
-            if referral_code and new_user.get("referred_by"):
+            if room_join_data and room_join_data.get("room"):
+                # Приветствие при присоединении к комнате
+                room = room_join_data["room"]
+                room_name = room.get("name", "комнату")
+                welcome_text = f"""🎓 Привет, {first_name}! Добро пожаловать в <b>RUDN Go</b>!
+
+🏠 Вы присоединились к комнате: <b>{room_name}</b>
+
+🚀 <b>Твой персональный помощник в учебе и командной работе</b>
+
+<i>Нажимай кнопку ниже, чтобы начать! 👇</i>"""
+            elif referral_code and new_user.get("referred_by"):
                 referrer_info = await db.user_settings.find_one({"telegram_id": new_user["referred_by"]})
                 referrer_name = referrer_info.get("first_name", "друг") if referrer_info else "друг"
                 welcome_text = f"""🎓 Привет, {first_name}! Добро пожаловать в <b>RUDN Go</b>!
@@ -434,7 +445,24 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
             logger.info(f"♻️ Пользователь вернулся: {telegram_id} (@{username})")
             
             # Приветственное сообщение для вернувшегося пользователя
-            welcome_text = f"""👋 С возвращением, {first_name}!
+            if room_join_data and room_join_data.get("room"):
+                # Если пользователь вернулся и присоединился к комнате
+                room = room_join_data["room"]
+                room_name = room.get("name", "комнату")
+                if room_join_data.get("is_new_member"):
+                    welcome_text = f"""👋 С возвращением, {first_name}!
+
+🏠 Отличные новости! Вы присоединились к комнате: <b>{room_name}</b>
+
+<i>Открой приложение, чтобы увидеть задачи комнаты! 👇</i>"""
+                else:
+                    welcome_text = f"""👋 С возвращением, {first_name}!
+
+ℹ️ Вы уже являетесь участником комнаты <b>{room_name}</b>
+
+<i>Открой приложение и продолжай работу! 👇</i>"""
+            else:
+                welcome_text = f"""👋 С возвращением, {first_name}!
 
 Рад снова тебя видеть в <b>RUDN Go</b>! 
 
