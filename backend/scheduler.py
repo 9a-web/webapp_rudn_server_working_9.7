@@ -52,6 +52,16 @@ class NotificationScheduler:
             replace_existing=True
         )
         
+        # Сброс дневных счетчиков задач каждый день в 00:00 по московскому времени
+        from apscheduler.triggers.cron import CronTrigger
+        self.scheduler.add_job(
+            self.reset_daily_task_counters,
+            trigger=CronTrigger(hour=0, minute=0, timezone=MOSCOW_TZ),
+            id='reset_daily_tasks',
+            name='Reset daily task counters',
+            replace_existing=True
+        )
+        
         self.scheduler.start()
         logger.info("Notification scheduler started (optimized intervals)")
     
