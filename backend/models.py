@@ -271,6 +271,14 @@ class UserStatsResponse(BaseModel):
     detailed_views: int
     night_usage_count: int
     early_usage_count: int
+    # Task-related fields for new achievements
+    tasks_created_total: int = 0
+    tasks_completed_total: int = 0
+    tasks_completed_today: int = 0
+    tasks_completed_early: int = 0
+    tasks_completed_on_time: int = 0
+    task_streak_current: int = 0
+    first_task_created: bool = False
     total_points: int
     achievements_count: int
 
