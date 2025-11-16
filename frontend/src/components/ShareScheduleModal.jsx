@@ -532,9 +532,9 @@ const ScheduleImageCard = React.forwardRef(({ schedule, selectedDate, groupName,
       )}
 
       {/* Footer */}
-      <div className="mt-6 bg-white/90 backdrop-blur-sm rounded-2xl p-4 text-center shadow-lg">
-        <p className="text-sm text-gray-700 font-medium">
-          Создано в <span className="font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">RUDN Schedule</span>
+      <div className="mt-6 bg-white rounded-2xl p-4 text-center shadow-sm">
+        <p className="text-sm text-[#1C1C1E] font-semibold">
+          RUDN Schedule
         </p>
         <p className="text-xs text-gray-500 mt-1">@rudn_pro_bot • Telegram WebApp</p>
       </div>
