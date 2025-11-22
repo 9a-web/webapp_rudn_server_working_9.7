@@ -3,7 +3,7 @@
 # Скрипт для скачивания бэкапа через API
 # Использование: ./download_backup.sh
 
-BACKEND_URL="https://class-progress-1.preview.emergentagent.com"
+BACKEND_URL="http://localhost:8001"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 OUTPUT_DIR="/app/api_backups"
 OUTPUT_FILE="${OUTPUT_DIR}/database_backup_${TIMESTAMP}.json"
