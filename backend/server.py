@@ -3218,6 +3218,167 @@ async def get_referral_tree(telegram_id: int):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ============ Экспорт/Импорт базы данных ============
+
+@api_router.get("/export/database")
+async def export_database():
+    """
+    Экспорт всей базы данных в JSON формате
+    Возвращает все коллекции с данными
+    """
+    try:
+        logger.info("Starting database export...")
+        
+        # Список коллекций для экспорта
+        collections_to_export = [
+            "user_settings",
+            "user_stats",
+            "user_achievements",
+            "tasks",
+            "rooms",
+            "room_participants",
+            "group_tasks"
+        ]
+        
+        export_data = {
+            "export_date": datetime.utcnow().isoformat(),
+            "database": "rudn_schedule",
+            "collections": {}
+        }
+        
+        # Экспортируем каждую коллекцию
+        for collection_name in collections_to_export:
+            try:
+                collection = db[collection_name]
+                documents = await collection.find().to_list(length=None)
+                
+                # Конвертируем ObjectId и datetime в строки
+                for doc in documents:
+                    if '_id' in doc:
+                        doc['_id'] = str(doc['_id'])
+                    for key, value in doc.items():
+                        if isinstance(value, datetime):
+                            doc[key] = value.isoformat()
+                
+                export_data["collections"][collection_name] = {
+                    "count": len(documents),
+                    "data": documents
+                }
+                
+                logger.info(f"Exported {len(documents)} documents from {collection_name}")
+            
+            except Exception as e:
+                logger.error(f"Error exporting collection {collection_name}: {e}")
+                export_data["collections"][collection_name] = {
+                    "count": 0,
+                    "data": [],
+                    "error": str(e)
+                }
+        
+        # Добавляем статистику
+        total_documents = sum(
+            col_data["count"] 
+            for col_data in export_data["collections"].values()
+        )
+        export_data["total_documents"] = total_documents
+        export_data["total_collections"] = len(collections_to_export)
+        
+        logger.info(f"Database export completed: {total_documents} documents from {len(collections_to_export)} collections")
+        
+        return JSONResponse(content=export_data)
+    
+    except Exception as e:
+        logger.error(f"Error during database export: {e}")
+        raise HTTPException(status_code=500, detail=f"Export failed: {str(e)}")
+
+
+@api_router.get("/export/collection/{collection_name}")
+async def export_collection(collection_name: str):
+    """
+    Экспорт отдельной коллекции в JSON формате
+    """
+    try:
+        allowed_collections = [
+            "user_settings", "user_stats", "user_achievements",
+            "tasks", "rooms", "room_participants", "group_tasks"
+        ]
+        
+        if collection_name not in allowed_collections:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Collection not allowed. Allowed: {', '.join(allowed_collections)}"
+            )
+        
+        collection = db[collection_name]
+        documents = await collection.find().to_list(length=None)
+        
+        # Конвертируем ObjectId и datetime в строки
+        for doc in documents:
+            if '_id' in doc:
+                doc['_id'] = str(doc['_id'])
+            for key, value in doc.items():
+                if isinstance(value, datetime):
+                    doc[key] = value.isoformat()
+        
+        export_data = {
+            "collection": collection_name,
+            "export_date": datetime.utcnow().isoformat(),
+            "count": len(documents),
+            "data": documents
+        }
+        
+        logger.info(f"Exported {len(documents)} documents from {collection_name}")
+        
+        return JSONResponse(content=export_data)
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error exporting collection {collection_name}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/backup/stats")
+async def backup_stats():
+    """
+    Получить статистику базы данных для бэкапа
+    """
+    try:
+        collections = [
+            "user_settings", "user_stats", "user_achievements",
+            "tasks", "rooms", "room_participants", "group_tasks"
+        ]
+        
+        stats = {
+            "database": "rudn_schedule",
+            "timestamp": datetime.utcnow().isoformat(),
+            "collections": {}
+        }
+        
+        total_size = 0
+        total_documents = 0
+        
+        for collection_name in collections:
+            collection = db[collection_name]
+            count = await collection.count_documents({})
+            
+            stats["collections"][collection_name] = {
+                "documents": count
+            }
+            
+            total_documents += count
+        
+        stats["total_collections"] = len(collections)
+        stats["total_documents"] = total_documents
+        
+        return stats
+    
+    except Exception as e:
+        logger.error(f"Error getting backup stats: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
