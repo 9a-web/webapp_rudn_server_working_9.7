@@ -358,8 +358,8 @@ grep -n "db\[" /app/backend/server.py | cut -d"[" -f2 | cut -d"]" -f1 | sort -u
 
 ## ССЫЛКИ
 
-- **Bot:** [@rudn_pro_bot](https://t.me/rudn_pro_bot)
-- **Frontend:** https://class-progress-1.preview.emergentagent.com
+- **Bot:** [@rudn_mosbot](https://t.me/rudn_mosbot)
+- **Frontend:** https://rudn-schedule.ru
 - **API РУДН:** http://www.rudn.ru/rasp/lessons/view
 - **OpenWeather API:** https://openweathermap.org/api
 
